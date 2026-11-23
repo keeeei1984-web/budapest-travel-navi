@@ -5,7 +5,10 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: { 'phrase-audio': ['./src/phrase-audio.ts'] },
+        manualChunks: {
+          'phrase-audio': ['./src/phrase-audio.ts'],
+          'restaurant-audio': ['./src/restaurant-audio.ts'],
+        },
       },
     },
   },

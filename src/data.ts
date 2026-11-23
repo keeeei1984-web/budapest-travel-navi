@@ -56,6 +56,32 @@ export const places: Place[] = [
   ...galleryBaths,
   ...restaurants.map(([name, original, dish, site, booking], i): Place => ({ id: 'r' + i, name, map: original + ', Budapest', kind: '食事', dish, site, booking })),
 ]
+export const restaurantExtras = [
+  ['レストラン', '初めて来たのですが、何がおすすめですか？', 'It’s our first time here. What would you recommend?', 'イッツ アワー ファースト タイム ヒア。ワット ウッド ユー レコメンド？', 'おすすめ料理'],
+  ['レストラン', '今日のおすすめは何ですか？', 'What are today’s specials?', 'ワット アー トゥデイズ スペシャルズ？', 'おすすめ料理'],
+  ['レストラン', '地元の人に人気の料理はどれですか？', 'Which dish is popular with locals?', 'ウィッチ ディッシュ イズ ポピュラー ウィズ ローカルズ？', 'おすすめ料理'],
+  ['レストラン', 'ハンガリーらしい前菜をおすすめしてもらえますか？', 'Could you recommend a traditional Hungarian starter?', 'クッド ユー レコメンド ア トラディショナル ハンゲリアン スターター？', 'おすすめ料理'],
+  ['レストラン', '2人でシェアするなら、何品くらいがおすすめですか？', 'How many dishes would you suggest for two people to share?', 'ハウ メニー ディッシズ ウッド ユー サジェスト フォー トゥー ピープル トゥー シェア？', 'おすすめ料理'],
+  ['レストラン', 'この前菜に合うメイン料理は何ですか？', 'What main course would go well with this starter?', 'ワット メイン コース ウッド ゴウ ウェル ウィズ ディス スターター？', 'おすすめ料理'],
+  ['レストラン', '地元のデザートで何かおすすめはありますか？', 'Is there a local dessert you’d recommend?', 'イズ ゼア ア ローカル ディザート ユード レコメンド？', 'おすすめ料理'],
+  ['レストラン', 'では、おすすめのものをお願いします。', 'We’ll go with your recommendation, please.', 'ウィル ゴウ ウィズ ユア レコメンデイション プリーズ', 'おすすめ料理'],
+  ['レストラン', 'ワインリストを見せてもらえますか？', 'Could we see the wine list, please?', 'クッド ウィー シー ザ ワイン リスト プリーズ？', 'ワイン'],
+  ['レストラン', 'ハンガリーの赤ワインでおすすめはありますか？', 'Could you recommend a Hungarian red wine?', 'クッド ユー レコメンド ア ハンゲリアン レッド ワイン？', 'ワイン'],
+  ['レストラン', 'この料理にはどのワインが合いますか？', 'Which wine would go well with this dish?', 'ウィッチ ワイン ウッド ゴウ ウェル ウィズ ディス ディッシュ？', 'ワイン'],
+  ['レストラン', 'この2品に合うワインはありますか？', 'Is there a wine that would go well with both of these dishes?', 'イズ ゼア ア ワイン ザット ウッド ゴウ ウェル ウィズ ボウス オヴ ジーズ ディッシズ？', 'ワイン'],
+  ['レストラン', '辛口の白ワインが好きです。何がおすすめですか？', 'I like dry white wine. What would you recommend?', 'アイ ライク ドライ ホワイト ワイン。ワット ウッド ユー レコメンド？', 'ワイン'],
+  ['レストラン', '軽めの赤ワインはありますか？', 'Do you have a light-bodied red wine?', 'ドゥー ユー ハヴ ア ライト ボディド レッド ワイン？', 'ワイン'],
+  ['レストラン', 'このワインは甘口ですか、それとも辛口ですか？', 'Is this wine sweet or dry?', 'イズ ディス ワイン スウィート オア ドライ？', 'ワイン'],
+  ['レストラン', '1本1万フォリント以内でおすすめはありますか？', 'Could you recommend a bottle for under ten thousand forints?', 'クッド ユー レコメンド ア ボトル フォー アンダー テン サウザンド フォリンツ？', 'ワイン'],
+  ['レストラン', 'この値段はボトル1本分ですか？', 'Is this the price for a whole bottle?', 'イズ ディス ザ プライス フォー ア ホウル ボトル？', 'ワイン'],
+  ['レストラン', 'このワインをボトルで1本お願いします。', 'Could we have a bottle of this wine, please?', 'クッド ウィー ハヴ ア ボトル オヴ ディス ワイン プリーズ？', 'ワイン'],
+  ['レストラン', 'ボトル1本とグラスを2つお願いします。', 'One bottle and two glasses, please.', 'ワン ボトル アンド トゥー グラッシズ プリーズ', 'ワイン'],
+  ['レストラン', '食事と一緒にワインを持ってきてもらえますか？', 'Could you bring the wine with our food, please?', 'クッド ユー ブリング ザ ワイン ウィズ アワー フード プリーズ？', 'ワイン'],
+  ['レストラン', 'このワインはグラスでも頼めますか？', 'Can we order this wine by the glass?', 'キャン ウィー オーダー ディス ワイン バイ ザ グラス？', 'ワイン'],
+  ['レストラン', 'ハーフボトルはありますか？', 'Do you have this in a half bottle?', 'ドゥー ユー ハヴ ディス イン ア ハーフ ボトル？', 'ワイン'],
+  ['レストラン', '甘口のトカイワインをグラスでお願いします。', 'Could I have a glass of sweet Tokaji wine, please?', 'クッド アイ ハヴ ア グラス オヴ スウィート トカイ ワイン プリーズ？', 'ワイン'],
+] as const
+
 export const phrases = [
   ['交通', 'このバスは空港に行きますか？', 'Does this bus go to the airport?', 'ダズ ディス バス ゴウ トゥ ジ エアポート？'],
   ['交通', '切符はどこで買えますか？', 'Where can I buy a ticket?', 'ウェア キャン アイ バイ ア ティケット？'],
@@ -79,8 +105,8 @@ export const phrases = [
   ['レストラン', '予約しています。名前はタナカです。', 'I have a reservation under the name Tanaka.', 'アイ ハヴ ア レザヴェイション アンダー ザ ネイム タナカ'],
   ['レストラン', '予約していません。どのくらい待ちますか？', 'We don’t have a reservation. How long is the wait?', 'ウィー ドウント ハヴ ア レザヴェイション。ハウ ロング イズ ザ ウェイト？'],
   ['レストラン', '英語のメニューはありますか？', 'Do you have a menu in English?', 'ドゥー ユー ハヴ ア メニュー イン イングリッシュ？'],
-  ['レストラン', 'このお店の名物は何ですか？', 'What is your signature dish?', 'ワット イズ ユア シグネチャー ディッシュ？'],
-  ['レストラン', 'ハンガリーの郷土料理で、おすすめは何ですか？', 'Which traditional Hungarian dish do you recommend?', 'ウィッチ トラディショナル ハンゲリアン ディッシュ ドゥー ユー レコメンド？'],
+  ['レストラン', 'このお店の名物は何ですか？', 'What is your signature dish?', 'ワット イズ ユア シグネチャー ディッシュ？', 'おすすめ料理'],
+  ['レストラン', 'ハンガリーの郷土料理で、おすすめは何ですか？', 'Which traditional Hungarian dish do you recommend?', 'ウィッチ トラディショナル ハンゲリアン ディッシュ ドゥー ユー レコメンド？', 'おすすめ料理'],
   ['レストラン', 'この料理には何が入っていますか？', 'What ingredients are in this dish?', 'ワット イングリーディエンツ アー イン ディス ディッシュ？'],
   ['レストラン', 'マンガリッツァ豚の料理はありますか？', 'Do you serve any dishes made with Mangalica pork?', 'ドゥー ユー サーヴ エニー ディッシズ メイド ウィズ マンガリツァ ポーク？'],
   ['レストラン', 'フォアグラの料理はありますか？', 'Do you serve foie gras?', 'ドゥー ユー サーヴ フォワ グラ？'],
@@ -105,5 +131,6 @@ export const phrases = [
   ['ホテル', '部屋の暖房が効きません。見てもらえますか？', 'The heating in my room isn’t working. Could someone take a look?', 'ザ ヒーティング イン マイ ルーム イズント ワーキング。クッド サムワン テイク ア ルック？'],
   ['ホテル', 'チェックアウトは何時ですか？', 'What time is check-out?', 'ワット タイム イズ チェックアウト？'],
   ['ホテル', 'チェックアウトのあと、午後まで荷物を預けられますか？', 'Can you keep our luggage until this afternoon after check-out?', 'キャン ユー キープ アワー ラゲッジ アンティル ディス アフタヌーン アフター チェックアウト？'],
+  ...restaurantExtras,
 ] as const
 export const packing = ['パスポート', '航空券・宿泊予約控え', '海外旅行保険', 'クレジットカード・現金', '充電器・変換プラグ', 'モバイルバッテリー', '防寒着・手袋', '常備薬', '水着・タオル・サンダル', 'eSIMまたはローミングの設定']
