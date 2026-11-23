@@ -51,8 +51,28 @@ const priorBooking: Partial<Record<string, string>> = {
   r7: 'https://retrolangos.hu/en/table-reservation/',
 }
 
+const tripadvisorPages: Partial<Record<string, string>> = {
+  r0: '3645242-Reviews-Kispiac_Bisztro',
+  r1: '26609385-Reviews-Negro_Mangalica',
+  r2: '26552930-Reviews-Paprika_Vendeglo',
+  r3: '782615-Reviews-Kiskakukk_Etterem',
+  r4: '692912-Reviews-Rosenstein_Vendeglo',
+  r5: '9856765-Reviews-Getto_Gulyas',
+  r6: '696068-Reviews-Menza_Restaurant_and_Cafe',
+  r7: '33046462-Reviews-Retro_Langos_Budapest_Vecsey',
+  r8: '13835287-Reviews-Langos_Florian_Square_Underpass',
+  r9: '794237-Reviews-Comme_Chez_Soi',
+  r10: '1382947-Reviews-Szazeves_Etterem',
+}
+
+export function tripadvisorRestaurantUrl(id: string): string | undefined {
+  const page = tripadvisorPages[id]
+  return page && `https://www.tripadvisor.jp/Restaurant_Review-g274887-d${page}-Budapest_Central_Hungary.html`
+}
+
 export function ReservationLinks({ place, id = place.id }: { place: Place; id?: string }) {
   const guide = directory[id]
+  const tripadvisor = tripadvisorRestaurantUrl(id)
   const custom = externalUrl(place.booking)
   const channels = custom && custom !== externalUrl(priorBooking[id])
     ? [{ label: '保存した予約URL', href: custom }, ...(guide?.channels.filter(item => item.href !== custom) ?? [])]
@@ -63,14 +83,17 @@ export function ReservationLinks({ place, id = place.id }: { place: Place; id?: 
       href.startsWith('https:') || href.startsWith('http:')
         ? <Link key={href} href={href}>{label}</Link>
         : <a key={href} className="button" href={href}>{label}</a>)
-      : <Link href={mapSearch(place.map || place.name + ', Budapest')}>店舗情報を見る</Link>}</div>
+      : <Link href={mapSearch(place.map || place.name + ', Budapest')}>店舗情報を見る</Link>}
+      {tripadvisor && <Link href={tripadvisor}>Tripadvisorで店舗情報を見る</Link>}
+    </div>
   </>
 }
 
 export function ReservationDirectory({ places, identify }: { places: Place[]; identify: (place: Place) => string }) {
   return <details className="card restaurant-bookings">
     <summary>レストランの予約先一覧</summary>
-    <p className="hint">空席は各店の予約先で確認できます。予約の成立は、店舗や予約サービスからの確認をご確認ください。</p>
+    <p className="hint">Tripadvisorの店舗ページに「予約する」が表示される場合は、そこから空席を確認できます。表示が見当たらない場合は、各店の公式予約先をご利用ください。</p>
+    <div className="row"><Link href="https://www.tripadvisor.com/Restaurants-g274887-zfp10602-Budapest_Central_Hungary.html">Tripadvisorで予約対応の店を探す</Link></div>
     {places.map(place => <div key={place.id} className="entry">
       <h3>{placeDisplayName(place.name)}</h3><ReservationLinks place={place} id={identify(place)}/>
     </div>)}
