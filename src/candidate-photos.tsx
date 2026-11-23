@@ -8,16 +8,20 @@ const photoCaptions: Record<string, string> = {
   s7: '英雄広場のミレニアム記念碑',
   s10: 'ユダヤ人街のドハーニ街シナゴーグ',
   s11: '市民公園の風景',
-  r3: 'キシュカクック・エーッテレムの看板（2014年）',
-  r6: 'メンザの店内',
-  r10: 'サーゼーヴェシュ・エッテレムの入口（過去の写真）',
-  r7: 'レトロ・ラーンゴシュの過去の写真（2015年）',
   'bath-csillaghegy': '施設の過去の写真（2017年）',
 }
 const dishPhotos: Record<string, { id: string; dish: string }> = {
   r0: { id: 'mangalica', dish: 'マンガリッツァ豚' },
+  r1: { id: 'mangalica-board', dish: 'マンガリッツァ豚のサラミ・ソーセージ' },
+  r2: { id: 'foie-gras', dish: 'フォアグラ料理' },
+  r3: { id: 'seared-foie-gras', dish: 'フォアグラのソテー' },
+  r4: { id: 'goose-leg', dish: 'ガチョウのもも肉のロースト' },
+  r5: { id: 'paprikash-galuska', dish: 'チキンパプリカ' },
   r6: { id: 'paprikash', dish: 'チキンパプリカ' },
   r7: { id: 'langos', dish: 'ランゴシュ' },
+  r8: { id: 'langos', dish: 'ランゴシュ' },
+  r9: { id: 'pasta', dish: 'パスタ料理' },
+  r10: { id: 'goulash', dish: 'グヤーシュスープ' },
 }
 
 
@@ -55,12 +59,6 @@ export const restaurantMenus: Record<string, string> = {
   r10: 'https://www.szazevesetterem.hu/eng/menu/',
 }
 
-export const restaurantGalleries: Record<string, string> = {
-  r9: 'https://commechezsoi.hu/rolunk#galeria',
-  r3: 'https://www.kiskakukk.hu/hu/galeria',
-  r5: 'https://www.flickr.com/photos/wallyg/55231512438/',
-}
-
 function Photo({ id, caption }: { id: string; caption: string }) {
   const url = images[`./assets/places/${id}.jpg`]
   const credit = credits[id]
@@ -75,11 +73,11 @@ function Photo({ id, caption }: { id: string; caption: string }) {
   </figure>
 }
 
-export function CandidatePhotos({ place, photoId = place.id }: { place: Place; photoId?: string }) {
-  const dishPhoto = dishPhotos[place.id]
+export function CandidatePhotos({ place, restaurantId }: { place: Place; restaurantId: string }) {
+  const dishPhoto = place.kind === '食事' ? dishPhotos[restaurantId] : undefined
   return <>
-    <Photo id={photoId} caption={photoCaptions[photoId] || place.name}/>
-    {dishPhoto && <Photo id={dishPhoto.id} caption={`${dishPhoto.dish}の参考写真（別の場所で撮影）`}/>}
+    {place.kind !== '食事' && <Photo id={place.id} caption={photoCaptions[place.id] || place.name}/>}
+    {dishPhoto && <Photo id={dishPhoto.id} caption={`${dishPhoto.dish}（料理の参考写真・別の場所で撮影）`}/>}
     {place.dish && <p className="hint">食べたい料理　{place.dish}。提供状況はお店でご確認ください。</p>}
   </>
 }

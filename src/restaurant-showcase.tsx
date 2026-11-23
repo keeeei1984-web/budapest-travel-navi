@@ -1,4 +1,4 @@
-import { restaurantGalleries, restaurantMenus } from './candidate-photos'
+import { restaurantMenus } from './candidate-photos'
 import { Link } from './shared'
 
 type RestaurantShowcase = {
@@ -31,7 +31,7 @@ export const restaurantShowcases: Record<string, RestaurantShowcase> = {
   r4: {
     trip: 'https://www.trip.com/restaurant/hungary/budapest/detail/rosenstein-vendeglo-17320245/',
     review: '692912-Reviews-Rosenstein_Vendeglo',
-    dishes: ['フォアグラのフライ（マッシュポテト添え）', 'ガチョウのもも肉のロースト（煮込みキャベツ添え）'],
+    dishes: ['ガチョウのもも肉のロースト（煮込みキャベツ添え）', 'フォアグラのフライ（マッシュポテト添え）'],
     menuNote: '料理例は公式サイトの過去のメニューから。',
   },
   r5: {
@@ -42,7 +42,7 @@ export const restaurantShowcases: Record<string, RestaurantShowcase> = {
   r9: {
     trip: 'https://my.trip.com/restaurant/hungary/budapest/detail/comme-chez-soi-17319786/',
     review: '794237-Reviews-Comme_Chez_Soi',
-    dishes: ['フォアグラ料理', '自家製パスタ'],
+    dishes: ['自家製パスタ', 'フォアグラ料理'],
     gallery: 'https://commechezsoi.hu/rolunk#galeria',
     menuNote: '料理例は店舗紹介と掲載レビューから。',
   },
@@ -59,21 +59,21 @@ export function RestaurantHighlights({ id }: { id: string }) {
   const restaurant = restaurantShowcases[id]
   const reviewUrl = `https://www.tripadvisor.jp/Restaurant_Review-g274887-d${restaurant.review}-Budapest_Central_Hungary.html`
   return <section className="restaurant-highlights" aria-label="店の写真・名物料理・メニュー">
-    <div className="row">
-      {restaurant.trip && <Link href={restaurant.trip}>Trip.comの写真</Link>}
-      <Link href={reviewUrl}>Tripadvisorの写真</Link>
-      {restaurant.gallery && <Link href={restaurant.gallery}>公式ギャラリー</Link>}
-      {id === 'r5' && <Link href={restaurantGalleries[id]}>店舗写真（Flickr）</Link>}
-      {id === 'r2' && <Link href="https://www.paprikavendeglo.hu/en/">公式サイトの料理写真</Link>}
-    </div>
     <div className="restaurant-dishes">
-      <h4>この店で食べたい料理</h4>
-      <ul>{restaurant.dishes.map(dish => <li key={dish}>{dish}</li>)}</ul>
+      <h4>おすすめの一皿</h4>
+      <strong>{restaurant.dishes[0]}</strong>
+      <ul>{restaurant.dishes.slice(1).map(dish => <li key={dish}>{dish}</li>)}</ul>
       <p className="hint">{restaurant.menuNote} 訪問日の提供状況はお店でご確認ください。</p>
     </div>
     <div className="row">
       <Link href={restaurantMenus[id]}>{id === 'r4' ? '公式サイト掲載の過去メニュー' : '公式メニュー'}</Link>
       {id === 'r4' && <Link href="https://rosenstein.hu/etlap/">公式メニュー案内（ハンガリー語）</Link>}
+    </div>
+    <div className="row">
+      {restaurant.trip && <Link href={restaurant.trip}>Trip.comの写真</Link>}
+      <Link href={reviewUrl}>Tripadvisorの写真</Link>
+      {restaurant.gallery && <Link href={restaurant.gallery}>公式ギャラリー</Link>}
+      {id === 'r2' && <Link href="https://www.paprikavendeglo.hu/en/">公式サイトの料理写真</Link>}
     </div>
   </section>
 }

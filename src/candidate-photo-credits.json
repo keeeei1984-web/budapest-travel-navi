@@ -29,18 +29,6 @@
     "license": "CC BY-SA 2.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
   },
-  "r6": {
-    "source": "https://commons.wikimedia.org/wiki/File:Menza_Restaurant,_Budapest_01.jpg",
-    "author": "Matthias Mueller from Zuerich, Switzerland",
-    "license": "CC BY 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
-  },
-  "r7": {
-    "source": "https://commons.wikimedia.org/wiki/File:Retr%C3%B3_L%C3%A1ngos_-_2015.05.13.JPG",
-    "author": "Derzsi Elekes Andor",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
-  },
   "bath-dandar": {
     "source": "https://commons.wikimedia.org/wiki/File:Dand%C3%A1r_utcai_gy%C3%B3gyf%C3%BCrd%C5%91_%C3%A9p%C3%BClete_(Budapest).jpg",
     "author": "Misibacsi at Hungarian Wikipedia",
@@ -149,16 +137,40 @@
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
   },
-  "r10": {
-    "source": "https://commons.wikimedia.org/wiki/File:Restaurant_Szazeues,_Budapest,_Hungary.JPG",
-    "author": "User: (WT-shared) Shoestring at wts wikivoyage",
+  "seared-foie-gras": {
+    "source": "https://commons.wikimedia.org/wiki/File:Foie_gras_de_canard_po%C3%A8ll%C3%A9.jpg",
+    "author": "ZhengZhou",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
-  "r3": {
-    "source": "https://commons.wikimedia.org/wiki/File:Pozsonyi-ut-12-KiskakukkEtterem-sign.JPG",
-    "author": "Illustratedjc",
+  "goulash": {
+    "source": "https://commons.wikimedia.org/wiki/File:Hungarian_goulash_soup.jpg",
+    "author": "Hu Totya",
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "goose-leg": {
+    "source": "https://commons.wikimedia.org/wiki/File:G%C3%A4nsekeule_mit_Apfelrotkohl_und_Th%C3%BCringer_Kl%C3%B6%C3%9Fen.JPG",
+    "author": "Brücke-Osteuropa",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+  },
+  "paprikash-galuska": {
+    "source": "https://commons.wikimedia.org/wiki/File:Paprik%C3%A1s_Csirke_Galusk%C3%A1val.jpg",
+    "author": "Sumit Surai",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "pasta": {
+    "source": "https://commons.wikimedia.org/wiki/File:Tagliatelle_al_rag%C3%B9.jpg",
+    "author": "Catia Giaccherini",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "mangalica-board": {
+    "source": "https://commons.wikimedia.org/wiki/File:Hungarian_Mangalica_pork_salamis_and_sausages.jpg",
+    "author": "Top Budapest",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
   }
 }

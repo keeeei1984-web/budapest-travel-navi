@@ -7,7 +7,7 @@ import { TransferQuickView } from './flight-guide'
 import { flightGuideTitle } from './flight-guide-data'
 import { Link, useSaved } from './shared'
 import { ReservationDirectory, ReservationLinks } from './restaurant-reservations'
-import { CandidatePhotos, candidateNotes, restaurantGalleries, restaurantMenus } from './candidate-photos'
+import { CandidatePhotos, candidateNotes, restaurantMenus } from './candidate-photos'
 import { RestaurantHighlights, restaurantShowcases } from './restaurant-showcase'
 import { BathComparison, BathCover, BathDetails } from './bath-gallery'
 import { bathInfo } from './bath-info'
@@ -252,11 +252,11 @@ function App() {
                   <button onClick={() => showBath(place.id)}>浴槽写真・詳細</button>
                   {bathInfo[place.id] && <label className="check"><input type="checkbox" checked={bathSelection.includes(place.id)} onChange={e => setBathSelection(e.target.checked ? [...bathSelection, place.id] : bathSelection.filter(id => id !== place.id))}/>比較に入れる</label>}
                 </div>
-              </> : <CandidatePhotos place={place} photoId={hasHighlights ? restaurantId : place.id}/>}
+              </> : <CandidatePhotos place={place} restaurantId={restaurantId}/>}
               {hasHighlights && <RestaurantHighlights id={restaurantId}/>}
               {!hasHighlights && candidateNotes[restaurantId] && <p className="hint">{candidateNotes[restaurantId]}</p>}
               {place.kind === '食事' && <details className="order-memo"><summary>予約する</summary><ReservationLinks place={place} id={restaurantId}/></details>}
-              <div className="row"><Link href={mapSearch(mapValue(place.id))}>{place.kind === '食事' ? '地図・店舗写真' : '地図'}</Link><button onClick={() => route('', place.id)}>経路</button>{!bathInfo[place.id]?.closed && <button onClick={() => addVisit(place.id)}>{dayLabel(day)}に追加</button>}</div>
+              <div className="row"><Link href={mapSearch(mapValue(place.id))}>地図</Link><button onClick={() => route('', place.id)}>経路</button>{!bathInfo[place.id]?.closed && <button onClick={() => addVisit(place.id)}>{dayLabel(day)}に追加</button>}</div>
               {place.kind === '食事' && <details className="order-memo">
                 <summary>注文メモ</summary>
                 <div className="fields">
@@ -292,7 +292,7 @@ function App() {
                 if (origin === place.id) setOrigin('')
                 if (destination === place.id) setDestination(hotelId)
               }}>候補を削除</button></div></details>
-              {place.kind !== '観光' && <div className="row">{externalUrl(place.site) ? <Link href={externalUrl(place.site)!}>公式サイト</Link> : <small>公式サイト未登録</small>}{!hasHighlights && restaurantGalleries[restaurantId] && <Link href={restaurantGalleries[restaurantId]}>店舗写真</Link>}{!hasHighlights && restaurantMenus[restaurantId] && <Link href={restaurantMenus[restaurantId]}>{place.id === 'r4' ? '過去のメニュー' : '公式メニュー'}</Link>}{place.kind === '温泉' && externalUrl(place.booking) && <Link href={externalUrl(place.booking)!}>予約</Link>}</div>}
+              {place.kind !== '観光' && <div className="row">{externalUrl(place.site) ? <Link href={externalUrl(place.site)!}>公式サイト</Link> : <small>公式サイト未登録</small>}{!hasHighlights && restaurantMenus[restaurantId] && <Link href={restaurantMenus[restaurantId]}>{place.id === 'r4' ? '過去のメニュー' : '公式メニュー'}</Link>}{place.kind === '温泉' && externalUrl(place.booking) && <Link href={externalUrl(place.booking)!}>予約</Link>}</div>}
             </article>
           })}
           <form className="row" onSubmit={e => {
