@@ -3,12 +3,15 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { phrases, restaurantExtras } from '../src/data.ts'
+import { flightPhrases } from '../src/flight-guide-data.ts'
 
 // Requires FFmpeg with libflite and libmp3lame. Run after editing English phrases.
 const temp = mkdtempSync(join(tmpdir(), 'budapest-voice-'))
 try {
   const input = join(temp, 'phrase.txt')
-  const clips = phrases.filter(([category]) => category !== 'ハンガリー語').map(([, , text]) => {
+  const guidePhrases = new Set(flightPhrases.map(([, text]) => text))
+  const texts = phrases.filter(([category]) => category !== 'ハンガリー語').map(([, , text]) => text)
+  const clips = [...texts, ...guidePhrases].map(text => {
     const spokenText = text.replaceAll('’', "'")
       .replace(/Mangalica/gi, 'mahn-ga-lee-tsa')
       .replace(/foie gras/gi, 'fwah grah')
@@ -24,8 +27,9 @@ try {
   })
   const extraPhrases = new Set(restaurantExtras.map(([, , text]) => text))
   const groups = [
-    ['phrase-audio', 'phraseAudio', clips.filter(([text]) => !extraPhrases.has(text))],
+    ['phrase-audio', 'phraseAudio', clips.filter(([text]) => !extraPhrases.has(text) && !guidePhrases.has(text))],
     ['restaurant-audio', 'restaurantAudio', clips.filter(([text]) => extraPhrases.has(text))],
+    ['flight-audio', 'flightAudio', clips.filter(([text]) => guidePhrases.has(text))],
   ]
   for (const [file, name, group] of groups) {
     writeFileSync(new URL(`../src/${file}.ts`, import.meta.url),
