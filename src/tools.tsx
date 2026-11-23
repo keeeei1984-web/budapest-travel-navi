@@ -18,13 +18,13 @@ export function Tools({ tool, setTool }: { tool: string; setTool: (tool: string)
 function Transit() {
   return <>
     <section className="card"><h2>地下鉄・トラム・バス</h2>
-      <p>Google マップや BudapestGO で路線、行き先、乗り場を確認します。地下鉄では改札付近、トラム・バスでは乗車時に、券種に応じて有効化します。前扉乗車の案内があるバスでは運転手に有効な乗車券を提示します。</p>
+      <p>Google マップや ブダペストゴー で路線、行き先、乗り場を確認します。地下鉄では改札付近、トラム・バスでは乗車時に、券種に応じて有効化します。前扉乗車の案内があるバスでは運転手に有効な乗車券を提示します。</p>
       <h3>券種と購入</h3><p>1回券、時間制券、トラベルカードなどがあります。1回券は原則として乗り換えごとに必要です。地下鉄間の乗り換えなどの例外や利用範囲は BKK で確認してください。</p>
-      <ol><li>券売機では画面の言語と券種・枚数を選び、画面に表示される方法で支払い、紙券を受け取ります。</li><li>BudapestGO ではアカウント登録後、券種を選び、利用者情報が求められた場合は入力し、アプリの案内に沿って支払います。</li></ol>
+      <ol><li>券売機では画面の言語と券種・枚数を選び、画面に表示される方法で支払い、紙券を受け取ります。</li><li>ブダペストゴー ではアカウント登録後、券種を選び、利用者情報が求められた場合は入力し、アプリの案内に沿って支払います。</li></ol>
       <h3>有効化と検札</h3><p>紙の1回券は地下鉄の入口付近または車内の刻印機で有効化します。アプリの乗車券は券種と画面の案内に従い、QRコードのスキャン等で有効化し、必要な場面でアニメーションや検札画面を提示します。検札に備えて使用済みの紙券も移動の終了まで保管してください。</p>
-      <div className="row"><Link href="https://bkk.hu/en/tickets-and-passes/prices/">券種・最新料金（BKK）</Link><Link href="https://bkk.hu/en/tickets-and-passes/budapestgo/">BudapestGO</Link><Link href="https://bkk.hu/en/timetables/I/">時刻表（BKK）</Link></div>
+      <div className="row"><Link href="https://bkk.hu/en/tickets-and-passes/prices/">券種・最新料金（BKK）</Link><Link href="https://bkk.hu/en/tickets-and-passes/budapestgo/">ブダペストゴー</Link><Link href="https://bkk.hu/en/timetables/I/">時刻表（BKK）</Link></div>
     </section>
-    <section className="card"><h2>空港アクセス · 100E</h2><p>100E Airport Express は空港と市中心部の Deák Ferenc tér を結ぶ路線です。通常の市内用乗車券とは利用条件が異なります。専用券は BudapestGO や券売機で購入できます。乗車時は紙券を有効化し、アプリ券は画面の案内に従って提示します。車内の Budapest Pay&GO を使える場合もあります。券の適用条件、乗り場、停車駅、発車時刻は利用前にBKK公式案内で確認してください。</p>
+    <section className="card"><h2>空港アクセス · 100E</h2><p>空港バス100Eは空港と市中心部のデアーク・フェレンツ広場 を結ぶ路線です。通常の市内用乗車券とは利用条件が異なります。専用券は ブダペストゴー や券売機で購入できます。乗車時は紙券を有効化し、アプリ券は画面の案内に従って提示します。車内の ブダペスト・ペイ＆ゴー を使える場合もあります。券の適用条件、乗り場、停車駅、発車時刻は利用前にBKK公式案内で確認してください。</p>
     <div className="row"><Link href="https://bkk.hu/en/travel-information/airport-express/">100E公式案内</Link><Link href="https://www.bud.hu/en">空港公式サイト</Link><Link href={directions(airport, 'transit')}>現在地から空港へ</Link><Link href={directions('Deák Ferenc tér, Budapest', 'transit', airport)}>空港から市中心部へ</Link></div></section>
   </>
 }

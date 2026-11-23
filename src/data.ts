@@ -10,19 +10,25 @@ const sights = [
   ['セーチェニ温泉', 'Széchenyi Thermal Bath'], ['ルダシュ温泉', 'Rudas Baths'],
 ]
 const restaurants = [
-  ['Kispiac Bisztró', 'マンガリッツァ豚', 'https://kispiacbudapest.hu/', 'https://kispiacbudapest.hu/reservation/'],
-  ['NegroMangalica Bistro', 'マンガリッツァ豚', 'https://www.negromangalica.hu/en', 'https://www.negromangalica.hu/en/contact'],
-  ['Paprika Vendéglő', 'フォアグラ', 'https://www.paprikavendeglo.hu/en/'],
-  ['Kiskakukk Étterem', 'フォアグラ', 'https://kiskakukk.hu/en', 'https://kiskakukk.hu/en'],
-  ['Rosenstein', 'フォアグラ', 'https://rosenstein.hu/en/', 'https://rosenstein.hu/en/'],
-  ['Gettó Gulyás', 'チキンパプリカ', 'https://gettogulyas.hu/en/homepage/', 'https://gettogulyas.hu/en/contact/'],
-  ['Menza', 'チキンパプリカ', 'https://www.menzaetterem.hu/en/', 'https://www.menzaetterem.hu/en/reservation/'],
-  ['Retro Lángos Budapest', 'ランゴシュ', 'https://retrolangos.hu/en/', 'https://retrolangos.hu/en/table-reservation/'],
-  ['Flórián téri Lángosos', 'ランゴシュ'],
+  ['キシュピアツ・ビストロー', 'Kispiac Bisztró', 'マンガリッツァ豚', 'https://kispiacbudapest.hu/', 'https://kispiacbudapest.hu/reservation/'],
+  ['ネグロ・マンガリツァ・ビストロー', 'NegroMangalica Bistro', 'マンガリッツァ豚', 'https://www.negromangalica.hu/en', 'https://www.negromangalica.hu/en/contact'],
+  ['パプリカ・ヴェンデーグルー', 'Paprika Vendéglő', 'フォアグラ', 'https://www.paprikavendeglo.hu/en/'],
+  ['キシュカクック・エーッテレム', 'Kiskakukk Étterem', 'フォアグラ', 'https://kiskakukk.hu/en', 'https://kiskakukk.hu/en'],
+  ['ローゼンシュタイン', 'Rosenstein', 'フォアグラ', 'https://rosenstein.hu/en/', 'https://rosenstein.hu/en/'],
+  ['ゲットー・グヤーシュ', 'Gettó Gulyás', 'チキンパプリカ', 'https://gettogulyas.hu/en/homepage/', 'https://gettogulyas.hu/en/contact/'],
+  ['メンザ', 'Menza', 'チキンパプリカ', 'https://www.menzaetterem.hu/en/', 'https://www.menzaetterem.hu/en/reservation/'],
+  ['レトロ・ラーンゴシュ・ブダペスト', 'Retro Lángos Budapest', 'ランゴシュ', 'https://retrolangos.hu/en/', 'https://retrolangos.hu/en/table-reservation/'],
+  ['フローリアーン・テーリ・ラーンゴショシュ', 'Flórián téri Lángosos', 'ランゴシュ'],
 ]
+// Older installations store the original restaurant name in each saved candidate.
+const localNames = new Map(restaurants.map(([name, original]) => [original, name]))
+export function placeDisplayName(name: string) {
+  return localNames.get(name.trim()) ?? name
+}
+
 export const places: Place[] = [
   ...sights.map(([name, map], i): Place => ({ id: 's' + i, name, map: map + ', Budapest', kind: '観光' })),
-  ...restaurants.map(([name, dish, site, booking], i): Place => ({ id: 'r' + i, name, map: name + ', Budapest', kind: '食事', dish, site, booking })),
+  ...restaurants.map(([name, original, dish, site, booking], i): Place => ({ id: 'r' + i, name, map: original + ', Budapest', kind: '食事', dish, site, booking })),
 ]
 export const phrases = [
   ['交通', 'このバスは空港に行きますか？', 'Does this bus go to the airport?', 'ダズ ディス バス ゴウ トゥ ジ エアポート？'],

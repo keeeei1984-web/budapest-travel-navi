@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { days, places, type Place } from './data'
+import { days, placeDisplayName, places, type Place } from './data'
 import { directions, externalUrl, mapSearch, type Mode } from './maps'
 import { Tools } from './tools'
 import { Link, useSaved } from './shared'
@@ -9,7 +9,9 @@ import './style.css'
 type Visit = { id: string; placeId: string; time: string; note: string; done: boolean }
 type Trip = { hotel: string; hotelMap: string; arrival: string; departure: string; flightNote: string }
 type Tab = 'ホーム' | '移動' | '旅程' | '候補' | 'ツール'
-const initialTrip = { hotel: 'Hotel Rum Budapest', hotelMap: 'https://maps.app.goo.gl/9ZmmA5YdwQtzotwZA', arrival: '09:15', departure: '14:25', flightNote: '' }
+const defaultHotelMapName = 'Hotel Rum Budapest'
+const defaultHotelName = 'ホテル・ラム・ブダペスト'
+const initialTrip = { hotel: defaultHotelName, hotelMap: 'https://maps.app.goo.gl/9ZmmA5YdwQtzotwZA', arrival: '09:15', departure: '14:25', flightNote: '' }
 const glyphs = { 'ホーム': '⌂', '移動': '↗', '旅程': '▤', '候補': '◇', 'ツール': '⊞' }
 const modes: [Mode, string][] = [['walking', '徒歩'], ['transit', '公共交通'], ['driving', '車']]
 const hotelId = '@hotel'
@@ -42,7 +44,9 @@ function App() {
   const [offlineReady, setOfflineReady] = useState(false)
   const [notice, setNotice] = useState('')
   const main = useRef<HTMLElement>(null)
-  const hotel = trip.hotel.trim() ? trip.hotel.trim() + ', Budapest' : ''
+  const hotelName = trip.hotel.trim() === defaultHotelMapName ? defaultHotelName : trip.hotel
+  const hotelQuery = hotelName.trim() === defaultHotelName ? defaultHotelMapName : hotelName.trim()
+  const hotel = hotelQuery ? hotelQuery + ', Budapest' : ''
   const mapValue = (id: string) => {
     if (id === hotelId) return hotel
     if (id === airportId) return 'Budapest Ferenc Liszt International Airport'
@@ -51,7 +55,12 @@ function App() {
   }
   const visitList = schedule[day] ?? []
   const next = visitList.find(visit => !visit.done && mapValue(visit.placeId))
-  const label = (id: string) => id === hotelId ? trip.hotel || 'ホテル' : id === airportId ? 'ブダペスト空港' : list.find(p => p.id === id)?.name
+  const label = (id: string) => {
+    if (id === hotelId) return hotelName || 'ホテル'
+    if (id === airportId) return 'ブダペスト空港'
+    const place = list.find(item => item.id === id)
+    return place && placeDisplayName(place.name)
+  }
   const editDay = (visits: Visit[]) => setSchedule({ ...schedule, [day]: visits })
   function go(page: Tab) { setTab(page); setNotice(''); window.scrollTo(0, 0); main.current?.focus({ preventScroll: true }) }
   function route(from: string, to: string) { setOrigin(from); setDestination(to); go('移動') }
@@ -72,7 +81,7 @@ function App() {
       removeEventListener('travel-storage-error', onStorageError)
     }
   }, [])
-  const options = <><option value={hotelId}>{label(hotelId)}</option><option value={airportId}>ブダペスト空港</option>{list.map(place => <option key={place.id} value={place.id}>{place.name}</option>)}</>
+  const options = <><option value={hotelId}>{label(hotelId)}</option><option value={airportId}>ブダペスト空港</option>{list.map(place => <option key={place.id} value={place.id}>{placeDisplayName(place.name)}</option>)}</>
   const dayPicker = <div className="segments days" aria-label="旅程の日付">{days.map((date, i) => <button key={date} aria-pressed={day === date} onClick={() => setDay(date)}>{dayLabel(date)}<small>{['水', '木', '金', '土'][i]}</small></button>)}</div>
   function addVisit(placeId: string) {
     if (!mapValue(placeId)) return
@@ -81,22 +90,22 @@ function App() {
   }
 
   return <>
-    <header className="mast"><div className="wrap brand"><span className="seal" aria-hidden="true">B</span><div>Budapest <span>Travel Navi</span></div><span className="status">{!online ? 'オフライン' : offlineReady ? 'オフライン準備済み' : 'オンライン'}</span></div></header>
+    <header className="mast"><div className="wrap brand"><span className="seal" aria-hidden="true">ブ</span><div>ブダペスト旅行ナビ</div><span className="status">{!online ? 'オフライン' : offlineReady ? 'オフライン準備済み' : 'オンライン'}</span></div></header>
     <main ref={main} tabIndex={-1} className="wrap content">
       {storageError && <p role="alert" className="hint">端末に変更を保存できませんでした。Safariの設定や空き容量を確認してください。</p>}
       {tab === 'ホーム' && <>
         <section className="hero">
-          <div className="hero-copy"><p>2027年2月10日 – 13日 ・ 3泊4日</p><h1>Budapest</h1><span>ブダペスト旅行ナビ</span></div>
+          <div className="hero-copy"><p>2027年2月10日 – 13日 ・ 3泊4日</p><h1>ブダペスト</h1></div>
         </section>
         <section className="home-actions">
-          <article className="card shortcut"><span className="square" aria-hidden="true">⌂</span><h2>ホテルに戻る</h2><p>{trip.hotel || 'ホテル未設定'} · 要確認</p><div className="row">{hotel && <Link primary href={directions(hotel, mode, '', true)}>Google マップで移動</Link>}{externalUrl(trip.hotelMap) && <Link href={externalUrl(trip.hotelMap)!}>ホテルの地図</Link>}</div></article>
+          <article className="card shortcut"><span className="square" aria-hidden="true">⌂</span><h2>ホテルに戻る</h2><p>{hotelName || 'ホテル未設定'} · 要確認</p><div className="row">{hotel && <Link primary href={directions(hotel, mode, '', true)}>Google マップで移動</Link>}{externalUrl(trip.hotelMap) && <Link href={externalUrl(trip.hotelMap)!}>ホテルの地図</Link>}</div></article>
           <article className="card shortcut"><span className="square" aria-hidden="true">↗</span><h2>次の目的地</h2><p>{dayLabel(day)} · {next ? label(next.placeId) : '未訪問の予定はありません'}</p>{next ? <Link primary href={directions(mapValue(next.placeId), mode, '', true)}>次の目的地へ移動</Link> : <button className="primary" onClick={() => go('旅程')}>旅程を開く →</button>}</article>
         </section>
         <section className="card"><h2>旅程を確認</h2>{dayPicker}<button onClick={() => go('旅程')}>{dayLabel(day)}の旅程を開く →</button></section>
         <section className="card"><h2>ホテル・航空便</h2><div className="summary"><div><small>2月10日 · 到着予定</small><strong>{trip.arrival || '未入力'}</strong></div><div><small>2月13日 · 出発予定</small><strong>{trip.departure || '未入力'}</strong></div></div>
           {trip.flightNote && <p className="pre">{trip.flightNote}</p>}
           <details><summary>ホテル・航空便を編集</summary><div className="fields">
-            <label>ホテル名（要確認）<input value={trip.hotel} onChange={e => setTrip({ ...trip, hotel: e.target.value })}/></label>
+            <label>ホテル名（要確認）<input value={hotelName} onChange={e => setTrip({ ...trip, hotel: e.target.value })}/></label>
             <label>ホテルの地図URL<input type="url" value={trip.hotelMap} onChange={e => setTrip({ ...trip, hotelMap: e.target.value })}/></label>
             <label>2月10日 到着予定（現地時刻）<input type="time" value={trip.arrival} onChange={e => setTrip({ ...trip, arrival: e.target.value })}/></label>
             <label>2月13日 出発予定（現地時刻）<input type="time" value={trip.departure} onChange={e => setTrip({ ...trip, departure: e.target.value })}/></label>
@@ -142,10 +151,11 @@ function App() {
           {list.filter(place => place.kind === kind).map((place, index, visible) => {
             const update = (change: Partial<Place>) => setList(list.map(item => item.id === place.id ? { ...item, ...change } : item))
             return <article key={place.id} className="entry">
-              {place.dish && <small className="accent">{place.dish}</small>}<h3>{place.name}</h3>
+              {place.dish && <small className="accent">{place.dish}</small>}<h3>{placeDisplayName(place.name)}</h3>
               <div className="row"><Link href={mapSearch(mapValue(place.id))}>地図</Link><button onClick={() => route('', place.id)}>経路</button><button onClick={() => addVisit(place.id)}>{dayLabel(day)}に追加</button></div>
               <details><summary>詳細・並べ替え</summary><div className="fields">
-                <label>地図の検索語<input value={place.map} onChange={e => update({ map: e.target.value })}/></label>
+                <label>表示名<input value={placeDisplayName(place.name)} onChange={e => update({ name: e.target.value })}/></label>
+                <label>地図の検索語（現地表記）<input value={place.map} onChange={e => update({ map: e.target.value })}/></label>
                 {place.kind === '食事' && <>
                   <label>食べたい料理<input value={place.dish ?? ''} onChange={e => update({ dish: e.target.value })}/></label>
                   <label>公式サイトURL<input type="url" value={place.site ?? ''} onChange={e => update({ site: e.target.value })}/></label>
