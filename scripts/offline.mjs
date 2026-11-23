@@ -20,7 +20,7 @@ const shell = new URL('index.html', self.registration.scope);
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(cacheName).then(cache => cache.addAll(files.map(file =>
     new Request(new URL(file, self.registration.scope), { cache: 'reload' })
-  ))));
+  ))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', event => {
   event.waitUntil(caches.keys().then(names => Promise.all(names
@@ -31,7 +31,10 @@ self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET' || !request.url.startsWith(self.registration.scope)) return;
   if (request.mode === 'navigate') {
-    event.respondWith(caches.open(cacheName).then(cache => cache.match(shell)).then(cached => cached || fetch(request)));
+    event.respondWith(fetch(request, { cache: 'no-cache' }).then(response => {
+      if (!response.ok) throw new Error('Navigation unavailable');
+      return response;
+    }).catch(() => caches.open(cacheName).then(cache => cache.match(shell))));
     return;
   }
   if (files.some(file => new URL(file, self.registration.scope).href === request.url)) {

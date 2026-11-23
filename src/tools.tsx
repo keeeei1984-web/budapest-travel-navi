@@ -57,6 +57,10 @@ function Phrasebook() {
       setAudioMessage('この英文の音声を準備できませんでした。')
       return
     }
+    const audioSession = (navigator as Navigator & { audioSession?: { type: string } }).audioSession
+    if (audioSession) {
+      try { audioSession.type = 'playback' } catch { /* Audio playback is still available. */ }
+    }
     const player = new Audio('data:audio/mpeg;base64,' + clip)
     audio.current = player
     setPlayingPhrase(text)
@@ -73,6 +77,7 @@ function Phrasebook() {
   }
   const matches = phrases.map((phrase, i) => ({ phrase, i })).filter(({ phrase, i }) => group === 'すべて' || group === phrase[0] || (group === 'お気に入り' && favorites.includes(i)))
   return <section className="card"><h2>旅行会話集</h2>
+    <p className="hint">音声更新版 · 聞こえないときは、再生中にiPhoneの音量を上げてください。</p>
     <label>場面<select value={group} onChange={e => setGroup(e.target.value)}>{groups.map(item => <option key={item}>{item}</option>)}</select></label>
     <p role="status" className="hint">{audioMessage || '英文の音声はオフラインでも再生できます。'}</p>
     {!matches.length && <p>お気に入りはまだありません。</p>}

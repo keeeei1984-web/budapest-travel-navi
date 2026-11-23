@@ -70,12 +70,20 @@ function App() {
     addEventListener('online', update)
     addEventListener('offline', update)
     addEventListener('travel-storage-error', onStorageError)
+    function checkForUpdate() {
+      if (document.visibilityState === 'visible' && navigator.onLine && 'serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistration().then(reg => reg?.update()).catch(() => {})
+      }
+    }
     if (import.meta.env.PROD && 'serviceWorker' in navigator) {
       const base = new URL(import.meta.env.BASE_URL, document.baseURI)
-      navigator.serviceWorker.register(new URL('sw.js', base)).then(() => navigator.serviceWorker.ready)
+      document.addEventListener('visibilitychange', checkForUpdate)
+      navigator.serviceWorker.register(new URL('sw.js', base), { updateViaCache: 'none' })
+        .then(reg => { if (navigator.onLine) void reg.update().catch(() => {}); return navigator.serviceWorker.ready })
         .then(() => setOfflineReady(true)).catch(() => {})
     }
     return () => {
+      document.removeEventListener('visibilitychange', checkForUpdate)
       removeEventListener('online', update)
       removeEventListener('offline', update)
       removeEventListener('travel-storage-error', onStorageError)
