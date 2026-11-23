@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { days, placeDisplayName, places, type Place } from './data'
+import { categorizeSavedPlace, days, placeDisplayName, places, type Place } from './data'
 import { directions, externalUrl, mapSearch, type Mode } from './maps'
 import { Tools } from './tools'
 import { Link, useSaved } from './shared'
@@ -29,7 +29,8 @@ function moveItem<T>(items: T[], index: number, delta: number) {
 function App() {
   const [tab, setTab] = useState<Tab>('ホーム')
   const [trip, setTrip] = useSaved('trip', initialTrip)
-  const [list, setList] = useSaved('places', places)
+  const [savedPlaces, setList] = useSaved('places', places)
+  const list = savedPlaces.map(categorizeSavedPlace)
   const [schedule, setSchedule] = useSaved<Record<string, Visit[]>>('schedule', {})
   const [day, setDay] = useSaved('day', days[0])
   const [mode, setMode] = useSaved<Mode>('mode', 'transit')
@@ -152,9 +153,9 @@ function App() {
         </section>
       </>}
       {tab === '候補' && <>
-        <h1>観光・レストラン候補</h1>
-        <div className="segments">{(['観光', '食事'] as const).map(key => <button key={key} aria-pressed={kind === key} onClick={() => setKind(key)}>{key === '食事' ? 'レストラン' : key}</button>)}</div>
-        {dayPicker}<p className="hint" role="status">{notice || (kind === '食事' ? '料理の提供・営業・予約状況は各店舗でご確認ください。' : '候補から訪問先を選んで旅程に追加できます。')}</p>
+        <h1>観光・レストラン・温泉候補</h1>
+        <div className="segments">{(['観光', '食事', '温泉'] as const).map(key => <button key={key} aria-pressed={kind === key} onClick={() => { setKind(key); setNotice('') }}>{key === '食事' ? 'レストラン' : key}</button>)}</div>
+        {dayPicker}<p className="hint" role="status">{notice || (kind === '食事' ? '料理の提供・営業・予約状況は各店舗でご確認ください。' : kind === '温泉' ? '営業時間・料金・入場条件は公式サイトでご確認ください。' : '候補から訪問先を選んで旅程に追加できます。')}</p>
         <section className="card">
           {list.filter(place => place.kind === kind).map((place, index, visible) => {
             const update = (change: Partial<Place>) => setList(list.map(item => item.id === place.id ? { ...item, ...change } : item))
@@ -164,8 +165,8 @@ function App() {
               <details><summary>詳細・並べ替え</summary><div className="fields">
                 <label>表示名<input value={placeDisplayName(place.name)} onChange={e => update({ name: e.target.value })}/></label>
                 <label>地図の検索語（現地表記）<input value={place.map} onChange={e => update({ map: e.target.value })}/></label>
-                {place.kind === '食事' && <>
-                  <label>食べたい料理<input value={place.dish ?? ''} onChange={e => update({ dish: e.target.value })}/></label>
+                {place.kind === '食事' && <label>食べたい料理<input value={place.dish ?? ''} onChange={e => update({ dish: e.target.value })}/></label>}
+                {place.kind !== '観光' && <>
                   <label>公式サイトURL<input type="url" value={place.site ?? ''} onChange={e => update({ site: e.target.value })}/></label>
                   <label>予約URL<input type="url" value={place.booking ?? ''} onChange={e => update({ booking: e.target.value })}/></label>
                 </>}
@@ -183,7 +184,7 @@ function App() {
                 if (origin === place.id) setOrigin('')
                 if (destination === place.id) setDestination(hotelId)
               }}>候補を削除</button></div></details>
-              {place.kind === '食事' && <div className="row">{externalUrl(place.site) ? <Link href={externalUrl(place.site)!}>公式サイト</Link> : <small>公式サイト未登録</small>}{externalUrl(place.booking) ? <Link href={externalUrl(place.booking)!}>予約</Link> : <small>予約リンク未登録</small>}</div>}
+              {place.kind !== '観光' && <div className="row">{externalUrl(place.site) ? <Link href={externalUrl(place.site)!}>公式サイト</Link> : <small>公式サイト未登録</small>}{externalUrl(place.booking) ? <Link href={externalUrl(place.booking)!}>予約</Link> : place.kind === '食事' && <small>予約リンク未登録</small>}</div>}
             </article>
           })}
           <form className="row" onSubmit={e => {
@@ -192,7 +193,7 @@ function App() {
             if (!name) return
             setList([...list, { id: crypto.randomUUID(), kind, name, map: name + ', Budapest' }])
             setNewName('')
-          }}><label>{kind === '食事' ? '店舗名' : '観光地名'}<input required value={newName} onChange={e => setNewName(e.target.value)}/></label><button className="primary" disabled={!newName.trim()}>候補を追加</button></form>
+          }}><label>{kind === '食事' ? '店舗名' : kind === '温泉' ? '温泉名' : '観光地名'}<input required value={newName} onChange={e => setNewName(e.target.value)}/></label><button className="primary" disabled={!newName.trim()}>候補を追加</button></form>
         </section>
       </>}
       {tab === 'ツール' && <><h1>旅行ツール</h1><Tools tool={tool} setTool={setTool}/></>}

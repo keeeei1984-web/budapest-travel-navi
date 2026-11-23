@@ -1,4 +1,4 @@
-export type Place = { id: string; name: string; map: string; kind: '観光' | '食事'; dish?: string; note?: string; site?: string; booking?: string }
+export type Place = { id: string; name: string; map: string; kind: '観光' | '食事' | '温泉'; dish?: string; note?: string; site?: string; booking?: string }
 export const days = ['2027-02-10', '2027-02-11', '2027-02-12', '2027-02-13']
 const sights = [
   ['漁夫の砦', 'Fisherman’s Bastion'], ['マーチャーシュ教会', 'Matthias Church'],
@@ -7,8 +7,18 @@ const sights = [
   ['聖イシュトヴァーン大聖堂', 'St. Stephen’s Basilica'], ['英雄広場', 'Heroes’ Square'],
   ['アンドラーシ通り', 'Andrássy út'], ['中央市場', 'Central Market Hall'],
   ['ユダヤ人街', 'Jewish Quarter District VII'], ['市民公園', 'Városliget'],
-  ['セーチェニ温泉', 'Széchenyi Thermal Bath'], ['ルダシュ温泉', 'Rudas Baths'],
 ]
+const baths: Place[] = [
+  { id: 's12', kind: '温泉', name: 'セーチェニ温泉', map: 'Széchenyi Thermal Bath, Budapest', site: 'https://www.szechenyibath.hu/en' },
+  { id: 's13', kind: '温泉', name: 'ルダシュ温泉', map: 'Rudas Baths, Budapest', site: 'https://www.rudasfurdo.hu/en' },
+]
+
+export function categorizeSavedPlace(place: Place): Place {
+  if (place.kind !== '観光') return place
+  const bath = baths.find(item => item.id === place.id)
+  return bath ? { ...place, kind: bath.kind, site: place.site ?? bath.site } : place
+}
+
 const restaurants = [
   ['キシュピアツ・ビストロー', 'Kispiac Bisztró', 'マンガリッツァ豚', 'https://kispiacbudapest.hu/', 'https://kispiacbudapest.hu/reservation/'],
   ['ネグロ・マンガリツァ・ビストロー', 'NegroMangalica Bistro', 'マンガリッツァ豚', 'https://www.negromangalica.hu/en', 'https://www.negromangalica.hu/en/contact'],
@@ -28,6 +38,7 @@ export function placeDisplayName(name: string) {
 
 export const places: Place[] = [
   ...sights.map(([name, map], i): Place => ({ id: 's' + i, name, map: map + ', Budapest', kind: '観光' })),
+  ...baths,
   ...restaurants.map(([name, original, dish, site, booking], i): Place => ({ id: 'r' + i, name, map: original + ', Budapest', kind: '食事', dish, site, booking })),
 ]
 export const phrases = [
