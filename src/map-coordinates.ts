@@ -1,4 +1,4 @@
-import { places, type Place } from './data'
+import { places, restaurantIdentity, type Place } from './data'
 import type { MapCoordinates } from './home-map'
 
 // Facility or representative landmark coordinates from OpenStreetMap contributors, ODbL.
@@ -34,6 +34,8 @@ export const defaultCoordinates: Partial<Record<string, MapCoordinates>> = {
   'r6': [47.504088, 19.062547],
   'r7': [47.505314, 19.049312],
   'r8': [47.541493, 19.041050],
+  'r9': [47.494489, 19.051344],
+  'r10': [47.493148, 19.051869],
   'hotel': [47.490414, 19.059137],
 }
 
@@ -47,5 +49,7 @@ export function mapCoordinates(place: Place): MapCoordinates | undefined {
     const longitude = Number(match[2])
     if (Math.abs(latitude) <= 85 && Math.abs(longitude) <= 180) return [latitude, longitude]
   }
-  return defaultQueries.get(place.id) === query ? defaultCoordinates[place.id] : undefined
+  if (defaultQueries.get(place.id) === query) return defaultCoordinates[place.id]
+  const knownRestaurant = restaurantIdentity({ ...place, name: '' })
+  return knownRestaurant !== place.id ? defaultCoordinates[knownRestaurant] : undefined
 }
