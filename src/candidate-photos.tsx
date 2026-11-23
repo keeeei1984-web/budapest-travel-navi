@@ -30,6 +30,8 @@ export const candidateNotes: Record<string, string> = {
   r6: 'この店で探したい一品　自家製シュペッツレを添えたチキンパプリカ。',
   r7: 'この店で探したい一品　サワークリームとチーズのラーンゴシュ。',
   r8: 'この店で探したい一品　屋台のラーンゴシュ。種類やトッピングは店頭でご確認ください。',
+  r9: 'フォアグラやパスタを探したいお店。現地名 Comme Chez Soi · Aranykéz utca 2。',
+  r10: 'チキンパプリカを食べたいときの候補。現地名 Százéves Étterem · Piarista utca 2。',
   s12: '市民公園にある温泉。黄色い建物に囲まれた屋外プールが目印です。',
   s13: 'ブダ側のドナウ川沿い。オスマン時代の浴場と屋上プールがあります。浴場ごとの入場条件は公式サイトへ。',
   'bath-lukacs': 'ブダ側にある歴史ある温泉。温泉浴槽と屋外の水泳プールがあります。',
@@ -48,9 +50,12 @@ export const restaurantMenus: Record<string, string> = {
   r5: 'https://gettogulyas.hu/en/menu/',
   r6: 'https://www.menzaetterem.hu/en/food/',
   r7: 'https://retrolangos.hu/en/menu/',
+  r9: 'https://commechezsoi.hu/etlap',
+  r10: 'https://www.szazevesetterem.hu/eng/menu/',
 }
 
 export const restaurantGalleries: Record<string, string> = {
+  r9: 'https://commechezsoi.hu/rolunk#galeria',
   r3: 'https://www.kiskakukk.hu/hu/galeria',
   r5: 'https://www.flickr.com/photos/wallyg/55231512438/',
 }

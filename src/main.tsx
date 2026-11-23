@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { addedBaths, categorizeSavedPlace, days, galleryBaths, placeDisplayName, places, type Place } from './data'
+import { addedBaths, categorizeSavedPlace, days, galleryBaths, latestRestaurants, placeDisplayName, places, restaurantIdentity, type Place } from './data'
 import { directions, externalUrl, mapSearch, type Mode } from './maps'
 import { Tools, type RestaurantTopic } from './tools'
 import { TransferQuickView } from './flight-guide'
 import { flightGuideTitle } from './flight-guide-data'
 import { Link, useSaved } from './shared'
+import { ReservationDirectory, ReservationLinks } from './restaurant-reservations'
 import { CandidatePhotos, candidateNotes, restaurantGalleries, restaurantMenus } from './candidate-photos'
 import { BathComparison, BathCover, BathDetails } from './bath-gallery'
 import { bathInfo } from './bath-info'
@@ -37,12 +38,16 @@ function moveItem<T>(items: T[], index: number, delta: number) {
 function App() {
   const [tab, setTab] = useState<Tab>('ホーム')
   const [trip, setTrip] = useSaved('trip', initialTrip)
-  const [savedPlaces, savePlaces] = useSaved<Place[] | { items: Place[]; galleryAdded?: boolean }>('places', { items: places, galleryAdded: true })
+  const [savedPlaces, savePlaces] = useSaved<Place[] | { items: Place[]; galleryAdded?: boolean; restaurantsAdded?: boolean }>('places', { items: places, galleryAdded: true, restaurantsAdded: true })
   const legacy = Array.isArray(savedPlaces)
   const savedList = legacy ? savedPlaces.map(categorizeSavedPlace) : savedPlaces.items
-  const additions = legacy ? [...addedBaths, ...galleryBaths] : savedPlaces.galleryAdded ? [] : galleryBaths
-  const list = [...savedList, ...additions.filter(bath => !savedList.some(place => place.id === bath.id || place.map === bath.map))]
-  const setList = (items: Place[]) => savePlaces({ items, galleryAdded: true })
+  const bathAdditions = legacy ? [...addedBaths, ...galleryBaths] : savedPlaces.galleryAdded ? [] : galleryBaths
+  const restaurantAdditions = legacy || !savedPlaces.restaurantsAdded ? latestRestaurants : []
+  const list = [...savedList,
+    ...bathAdditions.filter(bath => !savedList.some(place => place.id === bath.id || place.map === bath.map)),
+    ...restaurantAdditions.filter(restaurant => !savedList.some(place => restaurantIdentity(place) === restaurant.id)),
+  ]
+  const setList = (items: Place[]) => savePlaces({ items, galleryAdded: true, restaurantsAdded: true })
   const [schedule, setSchedule] = useSaved<Record<string, Visit[]>>('schedule', {})
   const [day, setDay] = useSaved('day', days[0])
   const [mode, setMode] = useSaved<Mode>('mode', 'transit')
@@ -217,6 +222,7 @@ function App() {
         <h1>観光・レストラン・温泉候補</h1>
         <div className="segments">{(['観光', '食事', '温泉'] as const).map(key => <button key={key} aria-pressed={kind === key} onClick={() => { setKind(key); setBathView(null); setNotice('') }}>{key === '食事' ? 'レストラン' : key}</button>)}</div>
         {dayPicker}<p className="hint" role="status">{notice || (kind === '食事' ? '料理の提供・営業・予約状況は各店舗でご確認ください。' : kind === '温泉' ? '営業時間・料金・入場条件は公式サイトでご確認ください。' : '候補から訪問先を選んで旅程に追加できます。')}</p>
+        {kind === '食事' && <ReservationDirectory places={list.filter(place => place.kind === '食事')} identify={restaurantIdentity}/>}
         {kind === '温泉' && bathDetail ? <BathDetails place={bathDetail} zoom={bathView?.zoom ?? false} back={() => showBath(null)} currency={openCurrency}>
           <div className="row">{bathFavoriteButton(bathDetail)}
             {!bathInfo[bathDetail.id]?.closed && <button className="primary" onClick={() => addVisit(bathDetail.id)}>{dayLabel(day)}に追加</button>}
@@ -233,6 +239,7 @@ function App() {
           {kind === '温泉' && favoritesOnly && !list.some(place => place.kind === '温泉' && bathFavorites.includes(place.id)) && <p className="hint">お気に入りの温泉はまだありません。</p>}
           {list.filter(place => place.kind === kind).map((place, index, visible) => {
             if (kind === '温泉' && favoritesOnly && !bathFavorites.includes(place.id)) return null
+            const restaurantId = restaurantIdentity(place)
             const update = (change: Partial<Place>) => setList(list.map(item => item.id === place.id ? { ...item, ...change } : item))
             return <article key={place.id} className="entry">
               {kind === '温泉' && <BathCover place={place} open={() => showBath(place.id, true)}/>}
@@ -244,7 +251,8 @@ function App() {
                   {bathInfo[place.id] && <label className="check"><input type="checkbox" checked={bathSelection.includes(place.id)} onChange={e => setBathSelection(e.target.checked ? [...bathSelection, place.id] : bathSelection.filter(id => id !== place.id))}/>比較に入れる</label>}
                 </div>
               </> : <CandidatePhotos place={place}/>}
-              {candidateNotes[place.id] && <p className="hint">{candidateNotes[place.id]}</p>}
+              {candidateNotes[restaurantId] && <p className="hint">{candidateNotes[restaurantId]}</p>}
+              {place.kind === '食事' && <details className="order-memo"><summary>予約する</summary><ReservationLinks place={place} id={restaurantId}/></details>}
               <div className="row"><Link href={mapSearch(mapValue(place.id))}>{place.kind === '食事' ? '地図・店舗写真' : '地図'}</Link><button onClick={() => route('', place.id)}>経路</button>{!bathInfo[place.id]?.closed && <button onClick={() => addVisit(place.id)}>{dayLabel(day)}に追加</button>}</div>
               {place.kind === '食事' && <details className="order-memo">
                 <summary>注文メモ</summary>
@@ -281,7 +289,7 @@ function App() {
                 if (origin === place.id) setOrigin('')
                 if (destination === place.id) setDestination(hotelId)
               }}>候補を削除</button></div></details>
-              {place.kind !== '観光' && <div className="row">{externalUrl(place.site) ? <Link href={externalUrl(place.site)!}>公式サイト</Link> : <small>公式サイト未登録</small>}{restaurantGalleries[place.id] && <Link href={restaurantGalleries[place.id]}>店舗写真</Link>}{restaurantMenus[place.id] && <Link href={restaurantMenus[place.id]}>{place.id === 'r4' ? '過去のメニュー' : '公式メニュー'}</Link>}{externalUrl(place.booking) ? <Link href={externalUrl(place.booking)!}>予約</Link> : place.kind === '食事' && <small>予約リンク未登録</small>}</div>}
+              {place.kind !== '観光' && <div className="row">{externalUrl(place.site) ? <Link href={externalUrl(place.site)!}>公式サイト</Link> : <small>公式サイト未登録</small>}{restaurantGalleries[restaurantId] && <Link href={restaurantGalleries[restaurantId]}>店舗写真</Link>}{restaurantMenus[restaurantId] && <Link href={restaurantMenus[restaurantId]}>{place.id === 'r4' ? '過去のメニュー' : '公式メニュー'}</Link>}{place.kind === '温泉' && externalUrl(place.booking) && <Link href={externalUrl(place.booking)!}>予約</Link>}</div>}
             </article>
           })}
           <form className="row" onSubmit={e => {

@@ -42,6 +42,8 @@ const restaurants = [
   ['メンザ', 'Menza', 'チキンパプリカ', 'https://www.menzaetterem.hu/en/', 'https://www.menzaetterem.hu/en/reservation/'],
   ['レトロ・ラーンゴシュ・ブダペスト', 'Retro Lángos Budapest', 'ランゴシュ', 'https://retrolangos.hu/en/', 'https://retrolangos.hu/en/table-reservation/'],
   ['フローリアーン・テーリ・ラーンゴショシュ', 'Flórián téri Lángosos', 'ランゴシュ'],
+  ['コム・シェ・ソワ', 'Comme Chez Soi', 'フォアグラ・パスタ', 'https://commechezsoi.hu/'],
+  ['サーゼーヴェシュ・エッテレム', 'Százéves Étterem', 'チキンパプリカ', 'https://www.szazevesetterem.hu/eng/'],
 ]
 // Older installations store the original restaurant name in each saved candidate.
 const localNames = new Map(restaurants.map(([name, original]) => [original, name]))
@@ -56,6 +58,21 @@ export const places: Place[] = [
   ...galleryBaths,
   ...restaurants.map(([name, original, dish, site, booking], i): Place => ({ id: 'r' + i, name, map: original + ', Budapest', kind: '食事', dish, site, booking })),
 ]
+export const latestRestaurants = places.filter(place => place.id === 'r9' || place.id === 'r10')
+
+const restaurantNameKey = (text: string) => text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^\p{L}]/gu, '')
+const latestAliases = new Map<string, string>([
+  ['commechezsoi', 'r9'], ['コムシェソワ', 'r9'], ['szazevesetterem', 'r10'], ['szazeves', 'r10'],
+  ['サーゼーヴェシュエッテレム', 'r10'], ['サーゼーヴェシュ', 'r10'], ['サーゼーヴェシュレストラン', 'r10'],
+].map(([name, id]) => [restaurantNameKey(name), id]))
+
+export function restaurantIdentity(place: Place) {
+  if (place.kind !== '食事') return place.id
+  return latestAliases.get(restaurantNameKey(place.name))
+    ?? latestAliases.get(restaurantNameKey(place.map.replace(/,\s*Budapest$/i, '')))
+    ?? place.id
+}
+
 export const restaurantExtras = [
   ['レストラン', '初めて来たのですが、何がおすすめですか？', 'It’s our first time here. What would you recommend?', 'イッツ アワー ファースト タイム ヒア。ワット ウッド ユー レコメンド？', 'おすすめ料理'],
   ['レストラン', '今日のおすすめは何ですか？', 'What are today’s specials?', 'ワット アー トゥデイズ スペシャルズ？', 'おすすめ料理'],
