@@ -9,7 +9,11 @@ const temp = mkdtempSync(join(tmpdir(), 'budapest-voice-'))
 try {
   const input = join(temp, 'phrase.txt')
   const clips = phrases.filter(([category]) => category !== 'ハンガリー語').map(([, , text]) => {
-    writeFileSync(input, text)
+    const spokenText = text.replaceAll('’', "'")
+      .replace(/Mangalica/gi, 'mahn-ga-lee-tsa')
+      .replace(/foie gras/gi, 'fwah grah')
+      .replace(/lángos/gi, 'lahn-gosh')
+    writeFileSync(input, spokenText)
     const mp3 = execFileSync('ffmpeg', [
       '-hide_banner', '-loglevel', 'error', '-f', 'lavfi', '-i', `flite=textfile=${input}:voice=slt`,
       '-af', 'afade=t=in:d=0.02,volume=1.5,adelay=120,apad=pad_dur=0.12',

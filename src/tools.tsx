@@ -32,7 +32,7 @@ function Transit() {
 }
 
 function Phrasebook() {
-  const [group, setGroup] = useState('すべて')
+  const [group, setGroup] = useState('レストラン')
   const [favorites, setFavorites] = useSaved<number[]>('favorites', [])
   const [active, setActive] = useState<number | null>(null)
   const [audioMessage, setAudioMessage] = useState('')
