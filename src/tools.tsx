@@ -1,6 +1,7 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { packing, phrases } from './data'
 import { directions } from './maps'
+import { phraseAudio } from './phrase-audio'
 import { Link, useSaved } from './shared'
 
 const airport = 'Budapest Ferenc Liszt International Airport'
@@ -37,25 +38,47 @@ function Phrasebook() {
   const dialog = useRef<HTMLDialogElement>(null)
   const lastButton = useRef<HTMLButtonElement>(null)
   const groups = ['すべて', ...new Set(phrases.map(p => p[0])), 'お気に入り']
+  const audio = useRef<HTMLAudioElement | null>(null)
+  const [playingPhrase, setPlayingPhrase] = useState<string | null>(null)
+  useEffect(() => () => {
+    audio.current?.pause()
+    audio.current = null
+  }, [])
+
   function speak(text: string) {
-    if (!('speechSynthesis' in window)) { setAudioMessage('この端末では読み上げを利用できません。'); return }
+    const previous = audio.current
+    previous?.pause()
+    audio.current = null
+    setPlayingPhrase(null)
     setAudioMessage('')
-    speechSynthesis.cancel()
-    const speech = new SpeechSynthesisUtterance(text)
-    speech.lang = 'en-US'
-    speech.onerror = event => {
-      if (!['interrupted', 'canceled'].includes(event.error)) setAudioMessage('音声を再生できませんでした。端末の音声設定を確認してください。')
+    if (previous && playingPhrase === text) return
+    const clip = phraseAudio.get(text)
+    if (!clip) {
+      setAudioMessage('この英文の音声を準備できませんでした。')
+      return
     }
-    speechSynthesis.speak(speech)
+    const player = new Audio('data:audio/mpeg;base64,' + clip)
+    audio.current = player
+    setPlayingPhrase(text)
+    const finish = (message = '') => {
+      if (audio.current !== player) return
+      audio.current = null
+      setPlayingPhrase(null)
+      setAudioMessage(message)
+    }
+    const onError = () => finish('音声を再生できませんでした。もう一度お試しください。')
+    player.onended = () => finish()
+    player.onerror = onError
+    player.play().catch(onError)
   }
   const matches = phrases.map((phrase, i) => ({ phrase, i })).filter(({ phrase, i }) => group === 'すべて' || group === phrase[0] || (group === 'お気に入り' && favorites.includes(i)))
   return <section className="card"><h2>旅行会話集</h2>
     <label>場面<select value={group} onChange={e => setGroup(e.target.value)}>{groups.map(item => <option key={item}>{item}</option>)}</select></label>
-    <p role="status" className="hint">{audioMessage || '英文は端末の音声で読み上げられます。'}</p>
+    <p role="status" className="hint">{audioMessage || '英文の音声はオフラインでも再生できます。'}</p>
     {!matches.length && <p>お気に入りはまだありません。</p>}
     {matches.map(({ phrase: [category, ja, text, kana], i }) => <article key={i} className="entry">
       <small className="accent">{category}</small><h3>{ja}</h3><p className="foreign" lang={category === 'ハンガリー語' ? 'hu' : 'en'}>{text}</p><p className="hint">{kana}</p>
-      <div className="row">{category !== 'ハンガリー語' && <button onClick={() => speak(text)}>読み上げ</button>}<button onClick={e => { lastButton.current = e.currentTarget; setActive(i); dialog.current?.showModal() }}>全画面表示</button>
+      <div className="row">{category !== 'ハンガリー語' && <button onClick={() => speak(text)}>{playingPhrase === text ? '停止' : '読み上げ'}</button>}<button onClick={e => { lastButton.current = e.currentTarget; setActive(i); dialog.current?.showModal() }}>全画面表示</button>
       <button aria-pressed={favorites.includes(i)} onClick={() => setFavorites(favorites.includes(i) ? favorites.filter(item => item !== i) : [...favorites, i])}>{favorites.includes(i) ? '★ お気に入り' : '☆ お気に入り'}</button></div>
     </article>)}
     <dialog ref={dialog} onClose={() => { setActive(null); lastButton.current?.focus() }} aria-labelledby="phrase-display">
