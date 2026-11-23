@@ -4,14 +4,17 @@ import { directions } from './maps'
 import { phraseAudio } from './phrase-audio'
 import { restaurantAudio } from './restaurant-audio'
 import { Link, useSaved } from './shared'
+import { FlightGuide } from './flight-guide'
+import { flightGuideTitle } from './flight-guide-data'
 import { fetchExchangeRate, useExchangeRate } from './exchange-rate'
 
 const airport = 'Budapest Ferenc Liszt International Airport'
-const tools = ['交通・空港', '会話集', '通貨換算', '持ち物']
+const tools = ['交通・空港', flightGuideTitle, '会話集', '通貨換算', '持ち物']
 export function Tools({ tool, setTool }: { tool: string; setTool: (tool: string) => void }) {
   return <>
     <div className="segments tool-tabs">{tools.map(item => <button key={item} aria-pressed={item === tool} onClick={() => setTool(item)}>{item}</button>)}</div>
     {tool === '交通・空港' && <Transit/>}
+    {tool === flightGuideTitle && <FlightGuide/>}
     {tool === '会話集' && <Phrasebook/>}
     {tool === '通貨換算' && <Currency/>}
     {tool === '持ち物' && <Packing/>}

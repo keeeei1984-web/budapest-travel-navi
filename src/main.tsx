@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { addedBaths, categorizeSavedPlace, days, galleryBaths, placeDisplayName, places, type Place } from './data'
 import { directions, externalUrl, mapSearch, type Mode } from './maps'
 import { Tools } from './tools'
+import { flightGuideTitle } from './flight-guide-data'
 import { Link, useSaved } from './shared'
 import { CandidatePhotos, candidateNotes, restaurantGalleries, restaurantMenus } from './candidate-photos'
 import { BathComparison, BathCover, BathDetails } from './bath-gallery'
@@ -146,6 +147,7 @@ function App() {
         <section className="card"><h2>旅程を確認</h2>{dayPicker}<button onClick={() => go('旅程')}>{dayLabel(day)}の旅程を開く →</button></section>
         <section className="card"><h2>ホテル・航空便</h2><div className="summary"><div><small>2月10日 · 到着予定</small><strong>{trip.arrival || '未入力'}</strong></div><div><small>2月13日 · 出発予定</small><strong>{trip.departure || '未入力'}</strong></div></div>
           {trip.flightNote && <p className="pre">{trip.flightNote}</p>}
+          <button onClick={() => { setTool(flightGuideTitle); go('ツール') }}>フライト・空港乗り継ぎガイド →</button>
           <details><summary>ホテル・航空便を編集</summary><div className="fields">
             <label>ホテル名（要確認）<input value={hotelName} onChange={e => setTrip({ ...trip, hotel: e.target.value })}/></label>
             <label>ホテルの地図URL<input type="url" value={trip.hotelMap} onChange={e => setTrip({ ...trip, hotelMap: e.target.value })}/></label>
