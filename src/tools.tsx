@@ -3,6 +3,7 @@ import { packing, phrases } from './data'
 import { directions } from './maps'
 import { phraseAudio } from './phrase-audio'
 import { Link, useSaved } from './shared'
+import { fetchExchangeRate, useExchangeRate } from './exchange-rate'
 
 const airport = 'Budapest Ferenc Liszt International Airport'
 const tools = ['交通・空港', '会話集', '通貨換算', '持ち物']
@@ -92,38 +93,27 @@ function Phrasebook() {
   </section>
 }
 
-type Rate = { value: number; date: string; updated: string; source: 'Frankfurter / ECB' | '手動' }
 const isPositive = (value: number) => Number.isFinite(value) && value > 0
 function Currency() {
-  const [saved, setSaved] = useSaved<Rate | null>('rate-online', null)
-  const [manual, setManual] = useSaved<Rate | null>('rate-manual', null)
-  const [preferManual, setPreferManual] = useSaved('rate-use-manual', false)
+  const { saved, setSaved, manual, setManual, preferManual, setPreferManual, rate } = useExchangeRate()
   const [manualInput, setManualInput] = useState(manual ? String(manual.value) : '')
   const [amount, setAmount] = useState('1000')
   const [from, setFrom] = useState<'HUF' | 'JPY'>('HUF')
   const [status, setStatus] = useState('')
   const [loading, setLoading] = useState(false)
-  const rate = preferManual ? manual ?? saved : saved ?? manual
   const to = from === 'HUF' ? 'JPY' : 'HUF'
   const result = rate && amount.trim() && Number(amount) >= 0 ? Number(amount) * (from === 'HUF' ? rate.value : 1 / rate.value) : null
 
   async function refresh() {
     setLoading(true)
     setStatus('取得中…')
-    const controller = new AbortController()
-    const timeout = window.setTimeout(() => controller.abort(), 10000)
     try {
-      const response = await fetch('https://api.frankfurter.dev/v1/latest?base=HUF&symbols=JPY', { signal: controller.signal, cache: 'no-store' })
-      if (!response.ok) throw new Error('rate request')
-      const data = await response.json()
-      if (data.base !== 'HUF' || typeof data.rates?.JPY !== 'number' || !isPositive(data.rates.JPY) || typeof data.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(data.date)) throw new Error('rate data')
-      setSaved({ value: data.rates.JPY, date: data.date, updated: new Date().toISOString(), source: 'Frankfurter / ECB' })
+      setSaved(await fetchExchangeRate())
       setPreferManual(false)
       setStatus('レートを更新しました。')
     } catch {
       setStatus('取得できませんでした。保存済みレートがあれば引き続き使えます。')
     } finally {
-      window.clearTimeout(timeout)
       setLoading(false)
     }
   }

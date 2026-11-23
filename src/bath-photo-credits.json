@@ -1,0 +1,134 @@
+{
+  "sz-out": {
+    "source": "https://commons.wikimedia.org/wiki/File:Budapest_Sz%C3%A9chenyi_Gy%C3%B3gyf%C3%BCrd%C5%91_2014_1.jpg",
+    "author": "Smiley.toerist",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "sz-steam": {
+    "source": "https://commons.wikimedia.org/wiki/File:Sz%C3%A9chenyi_baths_by_night_2.jpg",
+    "author": "Neef - 2",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "sz-in": {
+    "source": "https://commons.wikimedia.org/wiki/File:Budapest_Sz%C3%A9chenyi-Bad_Innenbecken_6.JPG",
+    "author": "Zairon",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "sz-flow": {
+    "source": "https://commons.wikimedia.org/wiki/File:Sz%C3%A9chenyi_Gy%C3%B3gyf%C3%BCrd%C5%91_thermal_spa_in_Budapest_008.JPG",
+    "author": "Aida",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+  },
+  "ru-roof": {
+    "source": "https://commons.wikimedia.org/wiki/File:Rudas_f%C3%BCrd%C5%91,_panor%C3%A1mamedence,_2.jpg",
+    "author": "Christo",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "ru-well": {
+    "source": "https://commons.wikimedia.org/wiki/File:Rudas_f%C3%BCrd%C5%91,_wellness_r%C3%A9szleg,_32_%C2%B0C-os_medence,_2.jpg",
+    "author": "Christo",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "ru-swim": {
+    "source": "https://commons.wikimedia.org/wiki/File:Rudas_f%C3%BCrd%C5%91,_%C3%BAsz%C3%B3medence.jpg",
+    "author": "Christo",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "ru-hot": {
+    "source": "https://commons.wikimedia.org/wiki/File:Rudas_f%C3%BCrd%C5%91,_wellness_r%C3%A9szleg,_42_%C2%B0C-os_medence.jpg",
+    "author": "Christo",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "lu-out": {
+    "source": "https://commons.wikimedia.org/wiki/File:Budapest,_Luk%C3%A1cs_f%C3%BCrd%C5%91,_26_%C2%B0C-os_medence.jpg",
+    "author": "Christo",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "lu-cold": {
+    "source": "https://commons.wikimedia.org/wiki/File:Budapest_Szent_Luk%C3%A1cs_Bath_20C_cold_water_pool.JPG",
+    "author": "Attila Hollósy-Gecseg (HOGATT at Hungarian Wikipedia)",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "lu-well": {
+    "source": "https://commons.wikimedia.org/wiki/File:Budapest_Szent_Luk%C3%A1cs_Bath_wellnes_area.JPG",
+    "author": "HOGATT Attila Hollósy-Gecseg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "lu-in2": {
+    "source": "https://commons.wikimedia.org/wiki/File:Budapest_Szent_Luk%C3%A1cs_Bath_weight_bath_pool.JPG",
+    "author": "HOGATT Attila Hollósy-Gecseg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "ge-thermal": {
+    "source": "https://commons.wikimedia.org/wiki/File:Budapest,_Gell%C3%A9rt_f%C3%BCrd%C5%91,_8.jpg",
+    "author": "Christo",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "ge-out": {
+    "source": "https://commons.wikimedia.org/wiki/File:Pool_at_the_Gell%C3%A9rt_F%C3%BCrd%C3%B6_(Gellert_Spa)_in_Budapest.JPG",
+    "author": "Toadberry",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "ru-classic": {
+    "source": "https://commons.wikimedia.org/wiki/File:Rudas_gy%C3%B3gyf%C3%BCrd%C5%91,_term%C3%A1l_medence._Fortepan_15670.jpg",
+    "author": "FOTO:Fortepan — ID 15670: Adományozó/Donor: Somlai Tibor.",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "sz-in3": {
+    "source": "https://commons.wikimedia.org/wiki/File:Budapest_Sz%C3%A9chenyi-Bad_Innenbecken_3.JPG",
+    "author": "Zairon",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "ge-mosaic": {
+    "source": "https://commons.wikimedia.org/wiki/File:Gellert_Thermal_Spa_Baths_-_52883969711.jpg",
+    "author": "Carnaval.com Studios",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+  },
+  "ge-tiles": {
+    "source": "https://commons.wikimedia.org/wiki/File:Budapest_Gell%C3%A9rtbad_M%C3%A4nnerthermalbad_2.JPG",
+    "author": "Zairon",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "ge-mosaictub": {
+    "source": "https://commons.wikimedia.org/wiki/File:Budapest_Gell%C3%A9rtbad_Frauenthermalbad_2.JPG",
+    "author": "Zairon",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "ru-roof-day": {
+    "source": "https://commons.wikimedia.org/wiki/File:Rudas_f%C3%BCrd%C5%91,_panor%C3%A1mamedence,_5.jpg",
+    "author": "Christo",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "lu-swim": {
+    "source": "https://commons.wikimedia.org/wiki/File:Budapest,_Luk%C3%A1cs_f%C3%BCrd%C5%91,_22-24_%E2%84%83_fokos_medence,_2.jpg",
+    "author": "Christo",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "lu-thermal": {
+    "source": "https://commons.wikimedia.org/wiki/File:Budapest,_Luk%C3%A1cs_f%C3%BCrd%C5%91,_term%C3%A1l_r%C3%A9szleg,_36_%C2%B0C_fokos_medence,_2.jpg",
+    "author": "Christo",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  }
+}

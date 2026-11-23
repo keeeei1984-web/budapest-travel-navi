@@ -12,22 +12,24 @@ const photoCaptions: Record<string, string> = {
   r7: 'レトロ・ラーンゴシュの過去の写真（2015年）',
   'bath-csillaghegy': '施設の過去の写真（2017年）',
 }
-const dishPhotos: Record<string, string> = {
-  'マンガリッツァ豚': 'mangalica',
-  'フォアグラ': 'foie-gras',
-  'チキンパプリカ': 'paprikash',
-  'ランゴシュ': 'langos',
+const dishPhotos: Record<string, { id: string; dish: string }> = {
+  r0: { id: 'mangalica', dish: 'マンガリッツァ豚' },
+  r2: { id: 'foie-gras', dish: 'フォアグラ' },
+  r6: { id: 'paprikash', dish: 'チキンパプリカ' },
+  r7: { id: 'langos', dish: 'ランゴシュ' },
 }
 
+
 export const candidateNotes: Record<string, string> = {
-  r0: '公式メニューの例　マンガリッツァ豚のポークチョップ。',
+  r0: 'この店で探したい一品　マンガリッツァ豚のポークチョップ。',
   r1: '店の公式案内では、マンガリッツァ豚のハムや赤ワイン仕立ての料理を紹介しています。',
-  r2: '公式メニューの例　ハンガリー風フォアグラ。',
-  r3: '公式メニューの例　焼きリンゴとトカイワインソースを添えたフォアグラのグリル。',
+  r2: 'この店で探したい一品　ハンガリー風フォアグラ。',
+  r3: 'この店で探したい一品　焼きリンゴとトカイワインソースを添えたフォアグラのグリル。',
   r4: '公式サイトに掲載されている過去のメニューには、フォアグラのフライとマッシュポテトがあります。',
-  r5: '公式メニューの例　ハンガリー風卵麺を添えたチキンパプリカ。',
-  r6: '公式メニューの例　自家製シュペッツレを添えたチキンパプリカ。',
-  r7: '公式メニューの例　サワークリームとチーズのラーンゴシュ。',
+  r5: 'この店で探したい一品　ハンガリー風卵麺を添えたチキンパプリカ。',
+  r6: 'この店で探したい一品　自家製シュペッツレを添えたチキンパプリカ。',
+  r7: 'この店で探したい一品　サワークリームとチーズのラーンゴシュ。',
+  r8: 'この店で探したい一品　屋台のラーンゴシュ。種類やトッピングは店頭でご確認ください。',
   s12: '市民公園にある温泉。黄色い建物に囲まれた屋外プールが目印です。',
   s13: 'ブダ側のドナウ川沿い。オスマン時代の浴場と屋上プールがあります。浴場ごとの入場条件は公式サイトへ。',
   'bath-lukacs': 'ブダ側にある歴史ある温泉。温泉浴槽と屋外の水泳プールがあります。',
@@ -68,10 +70,10 @@ function Photo({ id, caption }: { id: string; caption: string }) {
 }
 
 export function CandidatePhotos({ place }: { place: Place }) {
-  const dishId = place.dish && dishPhotos[place.dish]
+  const dishPhoto = dishPhotos[place.id]
   return <>
     <Photo id={place.id} caption={photoCaptions[place.id] || place.name}/>
-    {dishId && <Photo id={dishId} caption={`${place.dish}の一例（参考写真）`}/>}
+    {dishPhoto && <Photo id={dishPhoto.id} caption={`${dishPhoto.dish}の参考写真（別の場所で撮影）`}/>}
     {place.dish && <p className="hint">食べたい料理　{place.dish}。提供状況はお店でご確認ください。</p>}
   </>
 }
