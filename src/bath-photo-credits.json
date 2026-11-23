@@ -47,12 +47,6 @@
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   },
-  "lu-out": {
-    "source": "https://commons.wikimedia.org/wiki/File:Budapest,_Luk%C3%A1cs_f%C3%BCrd%C5%91,_26_%C2%B0C-os_medence.jpg",
-    "author": "Christo",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
-  },
   "lu-cold": {
     "source": "https://commons.wikimedia.org/wiki/File:Budapest_Szent_Luk%C3%A1cs_Bath_20C_cold_water_pool.JPG",
     "author": "Attila Hollósy-Gecseg (HOGATT at Hungarian Wikipedia)",
@@ -127,6 +121,24 @@
   },
   "lu-thermal": {
     "source": "https://commons.wikimedia.org/wiki/File:Budapest,_Luk%C3%A1cs_f%C3%BCrd%C5%91,_term%C3%A1l_r%C3%A9szleg,_36_%C2%B0C_fokos_medence,_2.jpg",
+    "author": "Christo",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "lu-icon": {
+    "source": "https://commons.wikimedia.org/wiki/File:Budapest,_Luk%C3%A1cs_f%C3%BCrd%C5%91,_26_%E2%84%83_fokos_%C3%BAsz%C3%B3medence,_6.jpg",
+    "author": "Christo",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "pa-icon": {
+    "source": "https://commons.wikimedia.org/wiki/File:Palatinus_Bath,_polygonal_pool._-_Margaret_Island,_Budapest,_Hungary.JPG",
+    "author": "Globetrotter19",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "cs-icon2": {
+    "source": "https://commons.wikimedia.org/wiki/File:Budapest%2C_Csillaghegyi_strand%2C_strandmedence.jpg",
     "author": "Christo",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"

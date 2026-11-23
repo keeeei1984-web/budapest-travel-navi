@@ -17,28 +17,30 @@ const entries: Record<string, [string, string][]> = {
     ['sz-in3', '高窓から光が入る屋内の温泉浴槽'],
   ],
   s13: [
-    ['ru-swim', 'アーチに囲まれた屋内水泳プール'],
-    ['ru-roof-day', 'ドナウ川に面した屋上のパノラマ浴槽'],
     ['ru-classic', '八角形のトルコ浴槽とドーム（歴史写真）'],
+    ['ru-roof-day', 'ドナウ川に面した屋上のパノラマ浴槽'],
+    ['ru-swim', 'アーチに囲まれた屋内水泳プール'],
     ['ru-well', '屋内ウェルネスエリアの32℃浴槽'],
     ['ru-roof', '夜の屋上浴場と対岸の街明かり'],
     ['ru-hot', '屋内ウェルネスエリアの42℃浴槽'],
   ],
   'bath-lukacs': [
-    ['lu-well', '屋内のウェルネス浴槽'],
-    ['lu-out', '建物に囲まれた屋外プール'],
-    ['lu-swim', '屋外の水泳プール'],
+    ['lu-icon', '黄色い建物に囲まれた屋外の水泳プール'],
     ['lu-thermal', '屋内の36℃温泉浴槽（撮影時）'],
+    ['lu-well', '屋内のウェルネス浴槽'],
+    ['lu-swim', '湯気に包まれた屋外の水泳プール'],
     ['lu-cold', '小さな水風呂（撮影時20℃）'],
     ['lu-in2', '手すりの付いた屋内の治療用浴槽'],
   ],
   'bath-gellert': [
-    ['ge-thermal', 'ガラス屋根がかかる大きな屋内プール（休業前）'],
+    ['ge-out', '柱廊と装飾窓が見える屋内大プール（休業前）'],
     ['ge-tiles', '装飾タイルと柱に囲まれた温泉浴槽（休業前）'],
+    ['ge-thermal', 'ガラス屋根がかかる大きな屋内プール（休業前）'],
     ['ge-mosaictub', '装飾のある別の屋内浴槽（休業前）'],
-    ['ge-out', '柱廊に囲まれた屋内大プール（休業前）'],
     ['ge-mosaic', '屋外プールとテラス（休業前）'],
   ],
+  'bath-palatinus': [['pa-icon', 'マルギット島の屋外プール（撮影時）']],
+  'bath-csillaghegy': [['cs-icon2', '緑に囲まれた屋外プール（撮影時）']],
 }
 
 function photos(id: string) {
@@ -59,9 +61,9 @@ export function BathCover({ place, open }: { place: Place; open: () => void }) {
   const cover = photos(place.id)[0]
   const info = bathInfo[place.id]
   return <>
-    {cover ? <><button className="bath-cover" onClick={open} aria-label={place.name + 'の浴槽写真を拡大'}>
+    {cover ? <><button className={place.id === 's13' ? 'bath-cover bath-cover-historic' : 'bath-cover'} onClick={open} aria-label={place.name + 'の浴槽写真を拡大'}>
       <img src={cover.url} alt={cover.caption} loading="lazy" decoding="async"/>
-    </button><Credit photo={cover}/></> : <div className="bath-photo-empty">浴槽写真未登録</div>}
+    </button>{place.id !== 's12' && <small className="bath-cover-caption">{cover.caption}</small>}<Credit photo={cover}/></> : <div className="bath-photo-empty">浴槽写真未登録</div>}
     {info?.visitStatus && info.closed && <p className="bath-closed">{info.visitStatus}</p>}
   </>
 }

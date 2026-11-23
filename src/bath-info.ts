@@ -40,6 +40,7 @@ export const bathInfo: Partial<Record<string, BathInfo>> = {
     access: 'トルコ浴場は水曜・月木金の朝が男性専用、火曜が女性専用。月木金11:00以降と土日は男女共用。',
     wear: 'トルコ浴場の男女共用時間は水着着用。専用時間や他のエリアは公式案内を参照。',
     rulesUrl: 'https://www.rudasfurdo.hu/en/opening-hours', visitStatus: unconfirmed,
+    galleryUrl: 'https://www.rudasfurdo.hu/en/galleries/rudas-thermal-baths',
   },
   'bath-lukacs': {
     english: 'Lukács Thermal Bath', indoor: 'あり', outdoor: 'あり',
@@ -76,6 +77,7 @@ export const bathInfo: Partial<Record<string, BathInfo>> = {
     english: 'Dandár Thermal Bath', indoor: 'あり', outdoor: 'あり',
     features: '屋内・屋外の温泉浴槽。', atmosphere: 'ペスト側の街中にある温泉。',
     hours: '公式サイトを参照。', hoursUrl: 'https://www.dandarfurdo.hu/en/opening-hours',
+    galleryUrl: 'https://www.dandarfurdo.hu/en/galleries/photos-of-dandar-thermal-bath',
     access: '未確認', wear: '未確認', visitStatus: unconfirmed,
   },
   'bath-palatinus': {
@@ -88,12 +90,14 @@ export const bathInfo: Partial<Record<string, BathInfo>> = {
     english: 'Paskál Thermal Baths', indoor: 'あり', outdoor: 'あり',
     features: '屋内温浴施設と屋外プール。', atmosphere: 'ペスト側のズグロー地区にある温浴施設。',
     hours: '公式サイトを参照。', hoursUrl: 'https://www.paskalfurdo.hu/en/opening-hours',
+    galleryUrl: 'https://www.paskalfurdo.hu/en/galleries/photos-of-paskal-bath',
     access: '未確認', wear: '未確認', visitStatus: unconfirmed,
   },
   'bath-csillaghegy': {
     english: 'Csillaghegyi Árpád Bath', indoor: 'あり', outdoor: 'あり（季節営業）',
     features: '屋内の温浴施設と季節営業の屋外エリア。', atmosphere: 'ブダ側北部の温浴施設。',
     hours: '公式サイトを参照。', hoursUrl: 'https://www.csillaghegyifurdo.hu/en/opening-hours',
+    galleryUrl: 'https://www.csillaghegyifurdo.hu/en/galleries/our-bath',
     access: '未確認', wear: '未確認', visitStatus: unconfirmed,
   },
 }
