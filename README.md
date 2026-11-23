@@ -48,4 +48,8 @@ npm run preview
 
 製品ビルドにはService Workerが含まれます。オフライン確認には `npm run preview` を使います。
 
-[GitHub Pagesの公開元設定](https://docs.github.com/ja/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) · [Appleのホーム画面追加手順](https://support.apple.com/ja-jp/guide/iphone/iphea86e5236/ios) · [写真（Unsplash）](https://images.unsplash.com/photo-1549877452-9c387954fbc2)
+[GitHub Pagesの公開元設定](https://docs.github.com/ja/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) · [Appleのホーム画面追加手順](https://support.apple.com/ja-jp/guide/iphone/iphea86e5236/ios)
+
+## ホーム画面の写真
+
+セーチェニ温泉の屋外プール。撮影 Elin B。ウェブ表示用に縮小・圧縮し、表示幅に合わせてトリミングしています。 [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Budapest_Sz%C3%A9chenyi_Bath.jpg) · [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/)
