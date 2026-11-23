@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { packing, phrases } from './data'
 import { directions } from './maps'
 import { phraseAudio } from './phrase-audio'
+import { restaurantAudio } from './restaurant-audio'
 import { Link, useSaved } from './shared'
 import { fetchExchangeRate, useExchangeRate } from './exchange-rate'
 
@@ -33,6 +34,7 @@ function Transit() {
 
 function Phrasebook() {
   const [group, setGroup] = useState('レストラン')
+  const [restaurantTopic, setRestaurantTopic] = useState('すべて')
   const [favorites, setFavorites] = useSaved<number[]>('favorites', [])
   const [active, setActive] = useState<number | null>(null)
   const [audioMessage, setAudioMessage] = useState('')
@@ -53,7 +55,7 @@ function Phrasebook() {
     setPlayingPhrase(null)
     setAudioMessage('')
     if (previous && playingPhrase === text) return
-    const clip = phraseAudio.get(text)
+    const clip = phraseAudio.get(text) ?? restaurantAudio.get(text)
     if (!clip) {
       setAudioMessage('この英文の音声を準備できませんでした。')
       return
@@ -76,14 +78,20 @@ function Phrasebook() {
     player.onerror = onError
     player.play().catch(onError)
   }
-  const matches = phrases.map((phrase, i) => ({ phrase, i })).filter(({ phrase, i }) => group === 'すべて' || group === phrase[0] || (group === 'お気に入り' && favorites.includes(i)))
+  const matches = phrases.map((phrase, i) => ({ phrase, i })).filter(({ phrase, i }) => {
+    if (group === 'レストラン' && restaurantTopic !== 'すべて') return phrase[0] === group && phrase[4] === restaurantTopic
+    return group === 'すべて' || group === phrase[0] || (group === 'お気に入り' && favorites.includes(i))
+  })
   return <section className="card"><h2>旅行会話集</h2>
     <p className="hint">音声更新版 · 聞こえないときは、再生中にiPhoneの音量を上げてください。</p>
     <label>場面<select value={group} onChange={e => setGroup(e.target.value)}>{groups.map(item => <option key={item}>{item}</option>)}</select></label>
+    {group === 'レストラン' && <div className="segments" role="group" aria-label="レストランの話題">
+      {['すべて', 'おすすめ料理', 'ワイン'].map(topic => <button key={topic} aria-pressed={restaurantTopic === topic} onClick={() => setRestaurantTopic(topic)}>{topic}</button>)}
+    </div>}
     <p role="status" className="hint">{audioMessage || '英文の音声はオフラインでも再生できます。'}</p>
     {!matches.length && <p>お気に入りはまだありません。</p>}
-    {matches.map(({ phrase: [category, ja, text, kana], i }) => <article key={i} className="entry">
-      <small className="accent">{category}</small><h3>{ja}</h3><p className="foreign" lang={category === 'ハンガリー語' ? 'hu' : 'en'}>{text}</p><p className="hint">{kana}</p>
+    {matches.map(({ phrase: [category, ja, text, kana, topic], i }) => <article key={i} className="entry">
+      <small className="accent">{topic ?? category}</small><h3>{ja}</h3><p className="foreign" lang={category === 'ハンガリー語' ? 'hu' : 'en'}>{text}</p><p className="hint">{kana}</p>
       <div className="row">{category !== 'ハンガリー語' && <button onClick={() => speak(text)}>{playingPhrase === text ? '停止' : '読み上げ'}</button>}<button onClick={e => { lastButton.current = e.currentTarget; setActive(i); dialog.current?.showModal() }}>全画面表示</button>
       <button aria-pressed={favorites.includes(i)} onClick={() => setFavorites(favorites.includes(i) ? favorites.filter(item => item !== i) : [...favorites, i])}>{favorites.includes(i) ? '★ お気に入り' : '☆ お気に入り'}</button></div>
     </article>)}
