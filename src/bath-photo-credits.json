@@ -142,5 +142,23 @@
     "author": "Christo",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "ve-dome": {
+    "source": "https://commons.wikimedia.org/wiki/File:Budapest,_Veli_Bej_f%C3%BCrd%C5%91.jpg",
+    "author": "Christo",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  "dd-archive": {
+    "source": "https://commons.wikimedia.org/wiki/File:Dand%C3%A1r_u._5-7._Dand%C3%A1r_Gy%C3%B3gyf%C3%BCrd%C5%91._Fortepan_17179.jpg",
+    "author": "FOTO:Fortepan — ID 17179: Adományozó/Donor: Ferencvárosi Helytörténeti Gyűjtemény.",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  "ps-icon": {
+    "source": "https://commons.wikimedia.org/wiki/File:Pask%C3%A1l_Strandf%C3%BCrd%C5%91_l%C3%A9gi_felv%C3%A9telen.jpg",
+    "author": "Civertan",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
   }
 }

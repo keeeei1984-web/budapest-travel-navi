@@ -39,6 +39,9 @@ const entries: Record<string, [string, string][]> = {
     ['ge-mosaictub', '装飾のある別の屋内浴槽（休業前）'],
     ['ge-mosaic', '屋外プールとテラス（休業前）'],
   ],
+  'bath-veli': [['ve-dome', 'ガラス張りの通路から見えるトルコ浴場のドーム（外観）']],
+  'bath-dandar': [['dd-archive', '高い窓と浴槽が見える屋内浴場（歴史写真）']],
+  'bath-paskal': [['ps-icon', '屋外プールを含む施設全体の空撮']],
   'bath-palatinus': [['pa-icon', 'マルギット島の屋外プール（撮影時）']],
   'bath-csillaghegy': [['cs-icon2', '緑に囲まれた屋外プール（撮影時）']],
 }
@@ -61,7 +64,7 @@ export function BathCover({ place, open }: { place: Place; open: () => void }) {
   const cover = photos(place.id)[0]
   const info = bathInfo[place.id]
   return <>
-    {cover ? <><button className={place.id === 's13' ? 'bath-cover bath-cover-historic' : 'bath-cover'} onClick={open} aria-label={place.name + 'の浴槽写真を拡大'}>
+    {cover ? <><button className={place.id === 's13' ? 'bath-cover bath-cover-historic' : 'bath-cover'} onClick={open} aria-label={place.name + 'の写真を拡大'}>
       <img src={cover.url} alt={cover.caption} loading="lazy" decoding="async"/>
     </button>{place.id !== 's12' && <small className="bath-cover-caption">{cover.caption}</small>}<Credit photo={cover}/></> : <div className="bath-photo-empty">浴槽写真未登録</div>}
     {info?.visitStatus && info.closed && <p className="bath-closed">{info.visitStatus}</p>}
