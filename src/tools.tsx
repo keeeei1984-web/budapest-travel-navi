@@ -10,12 +10,13 @@ import { fetchExchangeRate, useExchangeRate } from './exchange-rate'
 
 const airport = 'Budapest Ferenc Liszt International Airport'
 const tools = ['交通・空港', flightGuideTitle, '会話集', '通貨換算', '持ち物']
-export function Tools({ tool, setTool }: { tool: string; setTool: (tool: string) => void }) {
+export type RestaurantTopic = 'すべて' | 'おすすめ料理' | 'ワイン'
+export function Tools({ tool, setTool, phraseTopic = 'すべて' }: { tool: string; setTool: (tool: string) => void; phraseTopic?: RestaurantTopic }) {
   return <>
     <div className="segments tool-tabs">{tools.map(item => <button key={item} aria-pressed={item === tool} onClick={() => setTool(item)}>{item}</button>)}</div>
     {tool === '交通・空港' && <Transit/>}
     {tool === flightGuideTitle && <FlightGuide/>}
-    {tool === '会話集' && <Phrasebook/>}
+    {tool === '会話集' && <Phrasebook key={phraseTopic} initialTopic={phraseTopic}/>}
     {tool === '通貨換算' && <Currency/>}
     {tool === '持ち物' && <Packing/>}
     <details className="card"><summary>iPhoneのホーム画面に追加</summary><ol><li>公開URLをSafariで開く。</li><li>共有ボタンから「ホーム画面に追加」を選び、「追加」をタップ。</li><li>ホーム画面のアイコンからオンラインで一度起動し、「オフライン準備済み」を確認。</li></ol><p className="hint">会話集・旅程などはオフラインで閲覧できます。Google マップや外部サイト、最新レートの取得には通信が必要です。</p></details>
@@ -35,9 +36,9 @@ function Transit() {
   </>
 }
 
-function Phrasebook() {
+function Phrasebook({ initialTopic }: { initialTopic: RestaurantTopic }) {
   const [group, setGroup] = useState('レストラン')
-  const [restaurantTopic, setRestaurantTopic] = useState('すべて')
+  const [restaurantTopic, setRestaurantTopic] = useState<RestaurantTopic>(initialTopic)
   const [favorites, setFavorites] = useSaved<number[]>('favorites', [])
   const [active, setActive] = useState<number | null>(null)
   const [audioMessage, setAudioMessage] = useState('')
@@ -89,7 +90,7 @@ function Phrasebook() {
     <p className="hint">音声更新版 · 聞こえないときは、再生中にiPhoneの音量を上げてください。</p>
     <label>場面<select value={group} onChange={e => setGroup(e.target.value)}>{groups.map(item => <option key={item}>{item}</option>)}</select></label>
     {group === 'レストラン' && <div className="segments" role="group" aria-label="レストランの話題">
-      {['すべて', 'おすすめ料理', 'ワイン'].map(topic => <button key={topic} aria-pressed={restaurantTopic === topic} onClick={() => setRestaurantTopic(topic)}>{topic}</button>)}
+      {(['すべて', 'おすすめ料理', 'ワイン'] as const).map(topic => <button key={topic} aria-pressed={restaurantTopic === topic} onClick={() => setRestaurantTopic(topic)}>{topic}</button>)}
     </div>}
     <p role="status" className="hint">{audioMessage || '英文の音声はオフラインでも再生できます。'}</p>
     {!matches.length && <p>お気に入りはまだありません。</p>}

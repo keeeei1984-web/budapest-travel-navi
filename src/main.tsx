@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { addedBaths, categorizeSavedPlace, days, galleryBaths, placeDisplayName, places, type Place } from './data'
 import { directions, externalUrl, mapSearch, type Mode } from './maps'
-import { Tools } from './tools'
+import { Tools, type RestaurantTopic } from './tools'
+import { TransferQuickView } from './flight-guide'
 import { flightGuideTitle } from './flight-guide-data'
 import { Link, useSaved } from './shared'
 import { CandidatePhotos, candidateNotes, restaurantGalleries, restaurantMenus } from './candidate-photos'
@@ -10,7 +11,7 @@ import { BathComparison, BathCover, BathDetails } from './bath-gallery'
 import { bathInfo } from './bath-info'
 import './style.css'
 
-type Visit = { id: string; placeId: string; time: string; note: string; done: boolean }
+type Visit = { id: string; placeId: string; time: string; note: string; done: boolean; skipped?: boolean }
 type Trip = { hotel: string; hotelMap: string; arrival: string; departure: string; flightNote: string }
 type Tab = 'ホーム' | '移動' | '旅程' | '候補' | 'ツール'
 const defaultHotelMapName = 'Hotel Rum Budapest'
@@ -55,6 +56,8 @@ function App() {
   const [newName, setNewName] = useState('')
   const [toAdd, setToAdd] = useState('')
   const [tool, setTool] = useState('交通・空港')
+  const [transferQuick, setTransferQuick] = useState(false)
+  const [phraseTopic, setPhraseTopic] = useState<RestaurantTopic>('すべて')
   const [storageError, setStorageError] = useState(false)
   const [online, setOnline] = useState(navigator.onLine)
   const [offlineReady, setOfflineReady] = useState(false)
@@ -70,7 +73,8 @@ function App() {
     return place ? place.map.trim() || place.name + ', Budapest' : ''
   }
   const visitList = schedule[day] ?? []
-  const next = visitList.find(visit => !visit.done && mapValue(visit.placeId))
+  const isPending = (visit: Visit) => !visit.done && !visit.skipped && !!mapValue(visit.placeId)
+  const next = visitList.find(isPending)
   const label = (id: string) => {
     if (id === hotelId) return hotelName || 'ホテル'
     if (id === airportId) return 'ブダペスト空港'
@@ -79,6 +83,8 @@ function App() {
   }
   const editDay = (visits: Visit[]) => setSchedule({ ...schedule, [day]: visits })
   function go(page: Tab) { setBathView(null); setTab(page); setNotice(''); window.scrollTo(0, 0); main.current?.focus({ preventScroll: true }) }
+  function openOrderPhrases(topic: RestaurantTopic) { setPhraseTopic(topic); setTool('会話集'); go('ツール') }
+  function openFlightGuide() { setTransferQuick(false); setTool(flightGuideTitle); go('ツール') }
   function openCurrency() { setTool('通貨換算'); go('ツール') }
   function showBath(id: string | null, zoom = false) {
     setBathView(id ? { id, zoom } : null)
@@ -140,6 +146,7 @@ function App() {
         <section className="hero">
           <div className="hero-copy"><p>2027年2月10日 – 13日 ・ 3泊4日</p><h1>ブダペスト</h1></div>
         </section>
+        <button className="primary home-transfer" onClick={() => setTransferQuick(true)}>✈ 乗り継ぎ中</button>
         <section className="home-actions">
           <article className="card shortcut"><span className="square" aria-hidden="true">⌂</span><h2>ホテルに戻る</h2><p>{hotelName || 'ホテル未設定'} · 要確認</p><div className="row">{hotel && <Link primary href={directions(hotel, mode, '', true)}>Google マップで移動</Link>}{externalUrl(trip.hotelMap) && <Link href={externalUrl(trip.hotelMap)!}>ホテルの地図</Link>}</div></article>
           <article className="card shortcut"><span className="square" aria-hidden="true">↗</span><h2>次の目的地</h2><p>{dayLabel(day)} · {next ? label(next.placeId) : '未訪問の予定はありません'}</p>{next ? <Link primary href={directions(mapValue(next.placeId), mode, '', true)}>次の目的地へ移動</Link> : <button className="primary" onClick={() => go('旅程')}>旅程を開く →</button>}</article>
@@ -147,7 +154,7 @@ function App() {
         <section className="card"><h2>旅程を確認</h2>{dayPicker}<button onClick={() => go('旅程')}>{dayLabel(day)}の旅程を開く →</button></section>
         <section className="card"><h2>ホテル・航空便</h2><div className="summary"><div><small>2月10日 · 到着予定</small><strong>{trip.arrival || '未入力'}</strong></div><div><small>2月13日 · 出発予定</small><strong>{trip.departure || '未入力'}</strong></div></div>
           {trip.flightNote && <p className="pre">{trip.flightNote}</p>}
-          <button onClick={() => { setTool(flightGuideTitle); go('ツール') }}>フライト・空港乗り継ぎガイド →</button>
+          <button onClick={openFlightGuide}>フライト・空港乗り継ぎガイド →</button>
           <details><summary>ホテル・航空便を編集</summary><div className="fields">
             <label>ホテル名（要確認）<input value={hotelName} onChange={e => setTrip({ ...trip, hotel: e.target.value })}/></label>
             <label>ホテルの地図URL<input type="url" value={trip.hotelMap} onChange={e => setTrip({ ...trip, hotelMap: e.target.value })}/></label>
@@ -171,15 +178,23 @@ function App() {
       {tab === '旅程' && <>
         <h1>旅程</h1>{dayPicker}
         <section className="card"><h2>{dayLabel(day)}の予定</h2>
-          <p className="hint" role="status">{notice || (!visitList.length ? '候補を追加して、この日の訪問順を決められます。' : '訪問済みにすると、ホームの次の目的地が切り替わります。')}</p>
+          <p className="hint" role="status">{notice || (!visitList.length ? '候補を追加して、この日の訪問順を決められます。' : '『あとで行く』は当日の予定の最後に移動します。見送った予定はホームの次の目的地から外れます。')}</p>
           {visitList.map((visit, i) => {
-            const following = visitList[i + 1]
+            const following = visitList.slice(i + 1).find(isPending)
             const update = (change: Partial<Visit>) => editDay(visitList.map(item => item.id === visit.id ? { ...item, ...change } : item))
             return <article key={visit.id} className="entry">
               <h3>{label(visit.placeId) || '削除された候補'}</h3>
               <div className="fields"><label>予約時刻<input type="time" value={visit.time} onChange={e => update({ time: e.target.value })}/></label><label>メモ<textarea value={visit.note} onChange={e => update({ note: e.target.value })}/></label></div>
-              <label className="check"><input type="checkbox" checked={visit.done} onChange={e => update({ done: e.target.checked })}/>訪問済み</label>
-              <div className="row"><Order index={i} length={visitList.length} move={delta => editDay(moveItem(visitList, i, delta))}/>{following && mapValue(following.placeId) && mapValue(visit.placeId) && <button onClick={() => route(visit.placeId, following.placeId)}>次の訪問先への経路</button>}<button onClick={() => editDay(visitList.filter(item => item.id !== visit.id))}>旅程から削除</button></div>
+              {visit.skipped && <p className="hint">今日は見送り</p>}
+              <label className="check"><input type="checkbox" checked={visit.done} disabled={visit.skipped} onChange={e => update({ done: e.target.checked })}/>訪問済み</label>
+              <div className="row"><Order index={i} length={visitList.length} move={delta => editDay(moveItem(visitList, i, delta))}/>{following && !visit.skipped && mapValue(visit.placeId) && <button onClick={() => route(visit.placeId, following.placeId)}>次の訪問先への経路</button>}{!visit.done && !visit.skipped && <button disabled={!following} onClick={() => {
+                editDay([...visitList.filter(item => item.id !== visit.id), visit])
+                setNotice('「' + label(visit.placeId) + '」を当日の予定の最後に移動しました。')
+              }}>あとで行く</button>}
+              {!visit.done && <button onClick={() => {
+                update({ skipped: !visit.skipped })
+                setNotice(visit.skipped ? '予定に戻しました。' : '今日は見送ります。予定からいつでも戻せます。')
+              }}>{visit.skipped ? '予定に戻す' : '今日は見送る'}</button>}<button onClick={() => editDay(visitList.filter(item => item.id !== visit.id))}>旅程から削除</button></div>
             </article>
           })}
           <form className="row" onSubmit={e => { e.preventDefault(); addVisit(toAdd); setToAdd('') }}>
@@ -220,10 +235,21 @@ function App() {
               </> : <CandidatePhotos place={place}/>}
               {candidateNotes[place.id] && <p className="hint">{candidateNotes[place.id]}</p>}
               <div className="row"><Link href={mapSearch(mapValue(place.id))}>{place.kind === '食事' ? '地図・店舗写真' : '地図'}</Link><button onClick={() => route('', place.id)}>経路</button>{!bathInfo[place.id]?.closed && <button onClick={() => addVisit(place.id)}>{dayLabel(day)}に追加</button>}</div>
+              {place.kind === '食事' && <details className="order-memo">
+                <summary>注文メモ</summary>
+                <div className="fields">
+                  <label>食べたい一品<input value={place.dish ?? ''} onChange={e => update({ dish: e.target.value })}/></label>
+                  <label>一緒に頼みたいワイン<input value={place.orderWine ?? ''} onChange={e => update({ orderWine: e.target.value })}/></label>
+                  <label>店員さんに聞くこと<textarea value={place.orderQuestion ?? ''} onChange={e => update({ orderQuestion: e.target.value })}/></label>
+                </div>
+                <div className="row">
+                  <button onClick={() => openOrderPhrases('おすすめ料理')}>おすすめ料理の英会話</button>
+                  <button onClick={() => openOrderPhrases('ワイン')}>ワインの英会話</button>
+                </div>
+              </details>}
               <details><summary>詳細・並べ替え</summary><div className="fields">
                 <label>表示名<input value={placeDisplayName(place.name)} onChange={e => update({ name: e.target.value })}/></label>
                 <label>地図の検索語（現地表記）<input value={place.map} onChange={e => update({ map: e.target.value })}/></label>
-                {place.kind === '食事' && <label>食べたい料理<input value={place.dish ?? ''} onChange={e => update({ dish: e.target.value })}/></label>}
                 {place.kind !== '観光' && <>
                   <label>公式サイトURL<input type="url" value={place.site ?? ''} onChange={e => update({ site: e.target.value })}/></label>
                   <label>予約URL<input type="url" value={place.booking ?? ''} onChange={e => update({ booking: e.target.value })}/></label>
@@ -256,8 +282,9 @@ function App() {
           }}><label>{kind === '食事' ? '店舗名' : kind === '温泉' ? '温泉名' : '観光地名'}<input required value={newName} onChange={e => setNewName(e.target.value)}/></label><button className="primary" disabled={!newName.trim()}>候補を追加</button></form>
         </section></>}
       </>}
-      {tab === 'ツール' && <><h1>旅行ツール</h1><Tools tool={tool} setTool={setTool}/></>}
+      {tab === 'ツール' && <><h1>旅行ツール</h1><Tools tool={tool} setTool={value => { setPhraseTopic('すべて'); setTool(value) }} phraseTopic={phraseTopic}/></>}
     </main>
+    {transferQuick && <TransferQuickView close={() => setTransferQuick(false)} fullGuide={openFlightGuide}/>}
     <nav className="dock" aria-label="メインメニュー"><div className="wrap dock-inner">{(Object.keys(glyphs) as Tab[]).map(page => <button key={page} aria-current={tab === page ? 'page' : undefined} onClick={() => go(page)}><span aria-hidden="true">{glyphs[page]}</span>{page}</button>)}</div></nav>
   </>
 }

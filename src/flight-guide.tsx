@@ -145,3 +145,37 @@ function EmergencyPhrases() {
     </article>)}
   </section>
 }
+
+export function TransferQuickView({ close, fullGuide }: { close: () => void; fullGuide: () => void }) {
+  const [airport, setAirport] = useSaved<Airport>('flight-airport', 'munich')
+  const [checked, setChecked] = useSaved<string[]>('flight-checks', [])
+  const dialog = useRef<HTMLDialogElement>(null)
+  const transfer = transfers[airport]
+  const next = transfer.steps.findIndex((_, i) => !checked.includes(`${airport}-${i}`))
+  const flight = airport === 'munich' ? flightSchedule[0].days[1].flights[0] : flightSchedule[1].days[0].flights[1]
+
+  useEffect(() => { dialog.current?.showModal() }, [])
+
+  return <dialog ref={dialog} className="transfer-quick" aria-labelledby="transfer-quick-title" onClose={close}>
+    <div className="row transfer-quick-top"><h2 id="transfer-quick-title">乗り継ぎ中</h2><button onClick={() => dialog.current?.close()} autoFocus>閉じる</button></div>
+    <div className="segments" role="group" aria-label="乗り継ぎ空港">
+      {airports.map(key => <button key={key} aria-pressed={key === airport} onClick={() => setAirport(key)}>{transfers[key].label}</button>)}
+    </div>
+    <p className="transfer-flight"><strong>{flight.departure}</strong> {flight.to}行き · {flight.number}</p>
+    <p className="hint">出発予定は現地時刻です。搭乗口と締切は当日の掲示・搭乗券で確認してください。</p>
+    <section className="card" aria-live="polite">
+      <h3>次にすること</h3>
+      {next < 0 ? <p>すべての手順を確認しました。搭乗口で最新の案内を確認してください。</p> : <>
+        <p><strong>STEP {next + 1}　{transfer.steps[next][0]}</strong></p>
+        <p>{transfer.steps[next][1]}</p>
+        <button onClick={() => setChecked(current => [...new Set([...current, `${airport}-${next}`])])}>この手順を確認済みにする</button>
+      </>}
+    </section>
+    <section className="card">
+      <h3>係員に見せる英文</h3>
+      <p className="transfer-english" lang="en">{airport === 'munich' ? "I'm connecting to Budapest." : "I'm connecting to Tokyo Haneda."}<br/>I have a short connection. Could you help me, please?</p>
+      <p className="hint">乗り継ぎ時間が短いです。助けてもらえますか？</p>
+    </section>
+    <button onClick={() => { dialog.current?.close(); fullGuide() }}>空港乗り継ぎガイドを開く</button>
+  </dialog>
+}

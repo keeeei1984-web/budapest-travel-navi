@@ -1,4 +1,4 @@
-export type Place = { id: string; name: string; map: string; kind: '観光' | '食事' | '温泉'; dish?: string; note?: string; site?: string; booking?: string }
+export type Place = { id: string; name: string; map: string; kind: '観光' | '食事' | '温泉'; dish?: string; orderWine?: string; orderQuestion?: string; note?: string; site?: string; booking?: string }
 export const days = ['2027-02-10', '2027-02-11', '2027-02-12', '2027-02-13']
 const sights = [
   ['漁夫の砦', 'Fisherman’s Bastion'], ['マーチャーシュ教会', 'Matthias Church'],
