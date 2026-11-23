@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { addedBaths, categorizeSavedPlace, days, placeDisplayName, places, type Place } from './data'
+import { addedBaths, categorizeSavedPlace, days, galleryBaths, placeDisplayName, places, type Place } from './data'
 import { directions, externalUrl, mapSearch, type Mode } from './maps'
 import { Tools } from './tools'
 import { Link, useSaved } from './shared'
 import { CandidatePhotos, candidateNotes, restaurantGalleries, restaurantMenus } from './candidate-photos'
+import { BathComparison, BathCover, BathDetails } from './bath-gallery'
+import { bathInfo } from './bath-info'
 import './style.css'
 
 type Visit = { id: string; placeId: string; time: string; note: string; done: boolean }
@@ -30,17 +32,25 @@ function moveItem<T>(items: T[], index: number, delta: number) {
 function App() {
   const [tab, setTab] = useState<Tab>('ホーム')
   const [trip, setTrip] = useSaved('trip', initialTrip)
-  const [savedPlaces, savePlaces] = useSaved<Place[] | { items: Place[] }>('places', { items: places })
-  const list = Array.isArray(savedPlaces)
-    ? [...savedPlaces.map(categorizeSavedPlace), ...addedBaths.filter(bath => !savedPlaces.some(place => place.id === bath.id || place.map === bath.map))]
-    : savedPlaces.items
-  const setList = (items: Place[]) => savePlaces({ items })
+  const [savedPlaces, savePlaces] = useSaved<Place[] | { items: Place[]; galleryAdded?: boolean }>('places', { items: places, galleryAdded: true })
+  const legacy = Array.isArray(savedPlaces)
+  const savedList = legacy ? savedPlaces.map(categorizeSavedPlace) : savedPlaces.items
+  const additions = legacy ? [...addedBaths, ...galleryBaths] : savedPlaces.galleryAdded ? [] : galleryBaths
+  const list = [...savedList, ...additions.filter(bath => !savedList.some(place => place.id === bath.id || place.map === bath.map))]
+  const setList = (items: Place[]) => savePlaces({ items, galleryAdded: true })
   const [schedule, setSchedule] = useSaved<Record<string, Visit[]>>('schedule', {})
   const [day, setDay] = useSaved('day', days[0])
   const [mode, setMode] = useSaved<Mode>('mode', 'transit')
   const [origin, setOrigin] = useState('')
   const [destination, setDestination] = useState(hotelId)
   const [kind, setKind] = useState<Place['kind']>('観光')
+  const [bathFavorites, setBathFavorites] = useSaved<string[]>('bath-favorites', [])
+  const [favoritesOnly, setFavoritesOnly] = useState(false)
+  const [bathSelection, setBathSelection] = useState<string[]>([])
+  const [showComparison, setShowComparison] = useState(false)
+  const [bathView, setBathView] = useState<{ id: string; zoom: boolean } | null>(null)
+  const bathDetail = list.find(place => place.id === bathView?.id)
+  const comparison = list.filter(place => bathSelection.includes(place.id))
   const [newName, setNewName] = useState('')
   const [toAdd, setToAdd] = useState('')
   const [tool, setTool] = useState('交通・空港')
@@ -67,7 +77,21 @@ function App() {
     return place && placeDisplayName(place.name)
   }
   const editDay = (visits: Visit[]) => setSchedule({ ...schedule, [day]: visits })
-  function go(page: Tab) { setTab(page); setNotice(''); window.scrollTo(0, 0); main.current?.focus({ preventScroll: true }) }
+  function go(page: Tab) { setBathView(null); setTab(page); setNotice(''); window.scrollTo(0, 0); main.current?.focus({ preventScroll: true }) }
+  function openCurrency() { setTool('通貨換算'); go('ツール') }
+  function showBath(id: string | null, zoom = false) {
+    setBathView(id ? { id, zoom } : null)
+    setNotice('')
+    window.scrollTo(0, 0)
+    main.current?.focus({ preventScroll: true })
+  }
+  function toggleFavorite(id: string) {
+    setBathFavorites(current => current.includes(id) ? current.filter(item => item !== id) : [...current, id])
+  }
+  function bathFavoriteButton(place: Place) {
+    const active = bathFavorites.includes(place.id)
+    return <button aria-pressed={active} onClick={() => toggleFavorite(place.id)}>{active ? '★ お気に入り' : '☆ お気に入り'}</button>
+  }
   function route(from: string, to: string) { setOrigin(from); setDestination(to); go('移動') }
   useEffect(() => {
     const update = () => setOnline(navigator.onLine)
@@ -94,10 +118,15 @@ function App() {
       removeEventListener('travel-storage-error', onStorageError)
     }
   }, [])
-  const options = <><option value={hotelId}>{label(hotelId)}</option><option value={airportId}>ブダペスト空港</option>{list.map(place => <option key={place.id} value={place.id}>{placeDisplayName(place.name)}</option>)}</>
+  const placeOptions = (includeClosed = true) => <>
+    <option value={hotelId}>{label(hotelId)}</option><option value={airportId}>ブダペスト空港</option>
+    {list.filter(place => includeClosed || !bathInfo[place.id]?.closed).map(place =>
+      <option key={place.id} value={place.id}>{placeDisplayName(place.name)}</option>)}
+  </>
+  const options = placeOptions()
   const dayPicker = <div className="segments days" aria-label="旅程の日付">{days.map((date, i) => <button key={date} aria-pressed={day === date} onClick={() => setDay(date)}>{dayLabel(date)}<small>{['水', '木', '金', '土'][i]}</small></button>)}</div>
   function addVisit(placeId: string) {
-    if (!mapValue(placeId)) return
+    if (!mapValue(placeId) || bathInfo[placeId]?.closed) return
     editDay([...visitList, { id: crypto.randomUUID(), placeId, time: '', note: '', done: false }])
     setNotice(dayLabel(day) + 'の旅程に「' + label(placeId) + '」を追加しました。')
   }
@@ -152,22 +181,43 @@ function App() {
             </article>
           })}
           <form className="row" onSubmit={e => { e.preventDefault(); addVisit(toAdd); setToAdd('') }}>
-            <label>訪問先<select required value={toAdd} onChange={e => setToAdd(e.target.value)}><option value="">訪問先を選択</option>{options}</select></label><button className="primary" disabled={!mapValue(toAdd)}>旅程に追加</button>
+            <label>訪問先<select required value={toAdd} onChange={e => setToAdd(e.target.value)}><option value="">訪問先を選択</option>{placeOptions(false)}</select></label><button className="primary" disabled={!mapValue(toAdd)}>旅程に追加</button>
           </form>
         </section>
       </>}
       {tab === '候補' && <>
         <h1>観光・レストラン・温泉候補</h1>
-        <div className="segments">{(['観光', '食事', '温泉'] as const).map(key => <button key={key} aria-pressed={kind === key} onClick={() => { setKind(key); setNotice('') }}>{key === '食事' ? 'レストラン' : key}</button>)}</div>
+        <div className="segments">{(['観光', '食事', '温泉'] as const).map(key => <button key={key} aria-pressed={kind === key} onClick={() => { setKind(key); setBathView(null); setNotice('') }}>{key === '食事' ? 'レストラン' : key}</button>)}</div>
         {dayPicker}<p className="hint" role="status">{notice || (kind === '食事' ? '料理の提供・営業・予約状況は各店舗でご確認ください。' : kind === '温泉' ? '営業時間・料金・入場条件は公式サイトでご確認ください。' : '候補から訪問先を選んで旅程に追加できます。')}</p>
-        <section className="card">
+        {kind === '温泉' && bathDetail ? <BathDetails place={bathDetail} zoom={bathView?.zoom ?? false} back={() => showBath(null)} currency={openCurrency}>
+          <div className="row">{bathFavoriteButton(bathDetail)}
+            {!bathInfo[bathDetail.id]?.closed && <button className="primary" onClick={() => addVisit(bathDetail.id)}>{dayLabel(day)}に追加</button>}
+          </div>
+        </BathDetails> : <>
+        {kind === '温泉' && <>
+          <div className="row bath-toolbar">
+            <button aria-pressed={favoritesOnly} onClick={() => setFavoritesOnly(!favoritesOnly)}>お気に入りのみ</button>
+            <button disabled={comparison.length < 2} onClick={() => setShowComparison(!showComparison)}>選んだ温泉を比較（{comparison.length}件）</button>
+          </div>
+          {showComparison && <BathComparison places={comparison} close={() => setShowComparison(false)} currency={openCurrency}/>}
+        </>}
+        <section className={kind === '温泉' ? 'bath-list' : 'card'}>
+          {kind === '温泉' && favoritesOnly && !list.some(place => place.kind === '温泉' && bathFavorites.includes(place.id)) && <p className="hint">お気に入りの温泉はまだありません。</p>}
           {list.filter(place => place.kind === kind).map((place, index, visible) => {
+            if (kind === '温泉' && favoritesOnly && !bathFavorites.includes(place.id)) return null
             const update = (change: Partial<Place>) => setList(list.map(item => item.id === place.id ? { ...item, ...change } : item))
             return <article key={place.id} className="entry">
+              {kind === '温泉' && <BathCover place={place} open={() => showBath(place.id, true)}/>}
               <h3>{placeDisplayName(place.name)}</h3>
-              <CandidatePhotos place={place}/>
+              {kind === '温泉' ? <>
+                {bathInfo[place.id] && <small lang="en">{bathInfo[place.id]?.english}</small>}
+                <div className="row">{bathFavoriteButton(place)}
+                  <button onClick={() => showBath(place.id)}>浴槽写真・詳細</button>
+                  {bathInfo[place.id] && <label className="check"><input type="checkbox" checked={bathSelection.includes(place.id)} onChange={e => setBathSelection(e.target.checked ? [...bathSelection, place.id] : bathSelection.filter(id => id !== place.id))}/>比較に入れる</label>}
+                </div>
+              </> : <CandidatePhotos place={place}/>}
               {candidateNotes[place.id] && <p className="hint">{candidateNotes[place.id]}</p>}
-              <div className="row"><Link href={mapSearch(mapValue(place.id))}>{place.kind === '食事' ? '地図・店舗写真' : '地図'}</Link><button onClick={() => route('', place.id)}>経路</button><button onClick={() => addVisit(place.id)}>{dayLabel(day)}に追加</button></div>
+              <div className="row"><Link href={mapSearch(mapValue(place.id))}>{place.kind === '食事' ? '地図・店舗写真' : '地図'}</Link><button onClick={() => route('', place.id)}>経路</button>{!bathInfo[place.id]?.closed && <button onClick={() => addVisit(place.id)}>{dayLabel(day)}に追加</button>}</div>
               <details><summary>詳細・並べ替え</summary><div className="fields">
                 <label>表示名<input value={placeDisplayName(place.name)} onChange={e => update({ name: e.target.value })}/></label>
                 <label>地図の検索語（現地表記）<input value={place.map} onChange={e => update({ map: e.target.value })}/></label>
@@ -187,6 +237,8 @@ function App() {
                   setSchedule(Object.fromEntries(Object.entries(schedule).map(([date, visits]) => [date, visits.filter(item => item.placeId !== place.id)])))
                 }
                 setList(list.filter(item => item.id !== place.id))
+                setBathFavorites(current => current.filter(id => id !== place.id))
+                setBathSelection(current => current.filter(id => id !== place.id))
                 if (origin === place.id) setOrigin('')
                 if (destination === place.id) setDestination(hotelId)
               }}>候補を削除</button></div></details>
@@ -200,7 +252,7 @@ function App() {
             setList([...list, { id: crypto.randomUUID(), kind, name, map: name + ', Budapest' }])
             setNewName('')
           }}><label>{kind === '食事' ? '店舗名' : kind === '温泉' ? '温泉名' : '観光地名'}<input required value={newName} onChange={e => setNewName(e.target.value)}/></label><button className="primary" disabled={!newName.trim()}>候補を追加</button></form>
-        </section>
+        </section></>}
       </>}
       {tab === 'ツール' && <><h1>旅行ツール</h1><Tools tool={tool} setTool={setTool}/></>}
     </main>

@@ -21,6 +21,11 @@ export const addedBaths: Place[] = [
   { id: 'bath-csillaghegy', kind: '温泉', name: 'チッラグヘジ・アールパード温泉', map: 'Csillaghegyi Árpád Bath, Budapest', site: 'https://www.csillaghegyifurdo.hu/en' },
 ]
 
+export const galleryBaths: Place[] = [
+  { id: 'bath-veli', kind: '温泉', name: 'ヴェリ・ベイ温泉', map: 'Irgalmasok Veli Bej Bath, Budapest', site: 'https://www.irgalmasrend.hu/hu/velibej/home' },
+  { id: 'bath-gellert', kind: '温泉', name: 'ゲッレールト温泉', map: 'Gellért Thermal Bath, Budapest', site: 'https://www.gellertbath.hu/' },
+]
+
 export function categorizeSavedPlace(place: Place): Place {
   if (place.kind !== '観光') return place
   const bath = baths.find(item => item.id === place.id)
@@ -48,6 +53,7 @@ export const places: Place[] = [
   ...sights.map(([name, map], i): Place => ({ id: 's' + i, name, map: map + ', Budapest', kind: '観光' })),
   ...baths,
   ...addedBaths,
+  ...galleryBaths,
   ...restaurants.map(([name, original, dish, site, booking], i): Place => ({ id: 'r' + i, name, map: original + ', Budapest', kind: '食事', dish, site, booking })),
 ]
 export const phrases = [
