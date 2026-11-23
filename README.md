@@ -2,6 +2,8 @@
 
 2027年2月10日〜13日、ブダペスト旅行向けの日本語PWAです。React・TypeScript・Viteで作成し、APIキーなしで動きます。
 
+公開後は [Budapest Travel Navi を開く](https://keeeei1984-web.github.io/budapest-travel-navi/) から、iPhoneのSafariで利用できます。
+
 ## 使い方
 
 - **ホーム**でホテルに戻る、次の目的地へ移動、ホテルと航空便の編集ができます。次の目的地は選択日にある最初の未訪問予定です。
