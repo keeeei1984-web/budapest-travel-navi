@@ -9,6 +9,8 @@ import { Link, useSaved } from './shared'
 import { CandidatePhotos, candidateNotes, restaurantGalleries, restaurantMenus } from './candidate-photos'
 import { BathComparison, BathCover, BathDetails } from './bath-gallery'
 import { bathInfo } from './bath-info'
+import { HomeMap, type MapCategory, type MapPlace } from './home-map'
+import { defaultCoordinates, mapCoordinates } from './map-coordinates'
 import './style.css'
 
 type Visit = { id: string; placeId: string; time: string; note: string; done: boolean; skipped?: boolean }
@@ -21,6 +23,7 @@ const glyphs = { 'ホーム': '⌂', '移動': '↗', '旅程': '▤', '候補':
 const modes: [Mode, string][] = [['walking', '徒歩'], ['transit', '公共交通'], ['driving', '車']]
 const hotelId = '@hotel'
 const airportId = '@airport'
+const mapKinds: Record<Place['kind'], MapCategory> = { '観光': 'sightseeing', '食事': 'restaurant', '温泉': 'bath' }
 function dayLabel(day: string) { return '2月' + Number(day.slice(-2)) + '日' }
 
 function Order({ index, length, move }: { index: number; length: number; move: (delta: number) => void }) {
@@ -72,6 +75,13 @@ function App() {
     const place = list.find(p => p.id === id)
     return place ? place.map.trim() || place.name + ', Budapest' : ''
   }
+  const homeMapPlaces: MapPlace[] = [
+    ...(hotel ? [{ id: hotelId, name: hotelName, query: hotel, kind: 'hotel' as const, coordinates: hotelQuery === defaultHotelMapName ? defaultCoordinates.hotel : undefined }] : []),
+    ...list.map(place => ({
+      id: place.id, name: placeDisplayName(place.name), query: mapValue(place.id),
+      kind: mapKinds[place.kind], coordinates: mapCoordinates(place),
+    })),
+  ]
   const visitList = schedule[day] ?? []
   const isPending = (visit: Visit) => !visit.done && !visit.skipped && !!mapValue(visit.placeId)
   const next = visitList.find(isPending)
@@ -147,6 +157,7 @@ function App() {
           <div className="hero-copy"><p>2027年2月10日 – 13日 ・ 3泊4日</p><h1>ブダペスト</h1></div>
         </section>
         <button className="primary home-transfer" onClick={() => setTransferQuick(true)}>✈ 乗り継ぎ中</button>
+        <HomeMap places={homeMapPlaces} online={online} route={id => route('', id)}/>
         <section className="home-actions">
           <article className="card shortcut"><span className="square" aria-hidden="true">⌂</span><h2>ホテルに戻る</h2><p>{hotelName || 'ホテル未設定'} · 要確認</p><div className="row">{hotel && <Link primary href={directions(hotel, mode, '', true)}>Google マップで移動</Link>}{externalUrl(trip.hotelMap) && <Link href={externalUrl(trip.hotelMap)!}>ホテルの地図</Link>}</div></article>
           <article className="card shortcut"><span className="square" aria-hidden="true">↗</span><h2>次の目的地</h2><p>{dayLabel(day)} · {next ? label(next.placeId) : '未訪問の予定はありません'}</p>{next ? <Link primary href={directions(mapValue(next.placeId), mode, '', true)}>次の目的地へ移動</Link> : <button className="primary" onClick={() => go('旅程')}>旅程を開く →</button>}</article>
