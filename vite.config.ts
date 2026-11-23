@@ -7,6 +7,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           'phrase-audio': ['./src/phrase-audio.ts'],
+          'leaflet': ['leaflet'],
           'restaurant-audio': ['./src/restaurant-audio.ts'],
         },
       },
