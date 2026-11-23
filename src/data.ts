@@ -13,6 +13,14 @@ const baths: Place[] = [
   { id: 's13', kind: '温泉', name: 'ルダシュ温泉', map: 'Rudas Baths, Budapest', site: 'https://www.rudasfurdo.hu/en' },
 ]
 
+export const addedBaths: Place[] = [
+  { id: 'bath-lukacs', kind: '温泉', name: 'ルカーチ温泉', map: 'Lukács Thermal Bath, Budapest', site: 'https://www.lukacsfurdo.hu/en/' },
+  { id: 'bath-dandar', kind: '温泉', name: 'ダンダール温泉', map: 'Dandár Thermal Bath, Budapest', site: 'https://www.dandarfurdo.hu/en/' },
+  { id: 'bath-palatinus', kind: '温泉', name: 'パラティヌス温泉', map: 'Palatinus Thermal Bath, Budapest', site: 'https://www.palatinusstrand.hu/en/' },
+  { id: 'bath-paskal', kind: '温泉', name: 'パシュカール温泉', map: 'Paskál Thermal Baths, Budapest', site: 'https://www.paskalfurdo.hu/en/' },
+  { id: 'bath-csillaghegy', kind: '温泉', name: 'チッラグヘジ・アールパード温泉', map: 'Csillaghegyi Árpád Bath, Budapest', site: 'https://www.csillaghegyifurdo.hu/en' },
+]
+
 export function categorizeSavedPlace(place: Place): Place {
   if (place.kind !== '観光') return place
   const bath = baths.find(item => item.id === place.id)
@@ -39,6 +47,7 @@ export function placeDisplayName(name: string) {
 export const places: Place[] = [
   ...sights.map(([name, map], i): Place => ({ id: 's' + i, name, map: map + ', Budapest', kind: '観光' })),
   ...baths,
+  ...addedBaths,
   ...restaurants.map(([name, original, dish, site, booking], i): Place => ({ id: 'r' + i, name, map: original + ', Budapest', kind: '食事', dish, site, booking })),
 ]
 export const phrases = [

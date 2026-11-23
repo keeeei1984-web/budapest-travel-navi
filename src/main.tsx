@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { categorizeSavedPlace, days, placeDisplayName, places, type Place } from './data'
+import { addedBaths, categorizeSavedPlace, days, placeDisplayName, places, type Place } from './data'
 import { directions, externalUrl, mapSearch, type Mode } from './maps'
 import { Tools } from './tools'
 import { Link, useSaved } from './shared'
+import { CandidatePhotos, candidateNotes, restaurantGalleries, restaurantMenus } from './candidate-photos'
 import './style.css'
 
 type Visit = { id: string; placeId: string; time: string; note: string; done: boolean }
@@ -29,8 +30,11 @@ function moveItem<T>(items: T[], index: number, delta: number) {
 function App() {
   const [tab, setTab] = useState<Tab>('ホーム')
   const [trip, setTrip] = useSaved('trip', initialTrip)
-  const [savedPlaces, setList] = useSaved('places', places)
-  const list = savedPlaces.map(categorizeSavedPlace)
+  const [savedPlaces, savePlaces] = useSaved<Place[] | { items: Place[] }>('places', { items: places })
+  const list = Array.isArray(savedPlaces)
+    ? [...savedPlaces.map(categorizeSavedPlace), ...addedBaths.filter(bath => !savedPlaces.some(place => place.id === bath.id || place.map === bath.map))]
+    : savedPlaces.items
+  const setList = (items: Place[]) => savePlaces({ items })
   const [schedule, setSchedule] = useSaved<Record<string, Visit[]>>('schedule', {})
   const [day, setDay] = useSaved('day', days[0])
   const [mode, setMode] = useSaved<Mode>('mode', 'transit')
@@ -160,8 +164,10 @@ function App() {
           {list.filter(place => place.kind === kind).map((place, index, visible) => {
             const update = (change: Partial<Place>) => setList(list.map(item => item.id === place.id ? { ...item, ...change } : item))
             return <article key={place.id} className="entry">
-              {place.dish && <small className="accent">{place.dish}</small>}<h3>{placeDisplayName(place.name)}</h3>
-              <div className="row"><Link href={mapSearch(mapValue(place.id))}>地図</Link><button onClick={() => route('', place.id)}>経路</button><button onClick={() => addVisit(place.id)}>{dayLabel(day)}に追加</button></div>
+              <h3>{placeDisplayName(place.name)}</h3>
+              <CandidatePhotos place={place}/>
+              {candidateNotes[place.id] && <p className="hint">{candidateNotes[place.id]}</p>}
+              <div className="row"><Link href={mapSearch(mapValue(place.id))}>{place.kind === '食事' ? '地図・店舗写真' : '地図'}</Link><button onClick={() => route('', place.id)}>経路</button><button onClick={() => addVisit(place.id)}>{dayLabel(day)}に追加</button></div>
               <details><summary>詳細・並べ替え</summary><div className="fields">
                 <label>表示名<input value={placeDisplayName(place.name)} onChange={e => update({ name: e.target.value })}/></label>
                 <label>地図の検索語（現地表記）<input value={place.map} onChange={e => update({ map: e.target.value })}/></label>
@@ -184,7 +190,7 @@ function App() {
                 if (origin === place.id) setOrigin('')
                 if (destination === place.id) setDestination(hotelId)
               }}>候補を削除</button></div></details>
-              {place.kind !== '観光' && <div className="row">{externalUrl(place.site) ? <Link href={externalUrl(place.site)!}>公式サイト</Link> : <small>公式サイト未登録</small>}{externalUrl(place.booking) ? <Link href={externalUrl(place.booking)!}>予約</Link> : place.kind === '食事' && <small>予約リンク未登録</small>}</div>}
+              {place.kind !== '観光' && <div className="row">{externalUrl(place.site) ? <Link href={externalUrl(place.site)!}>公式サイト</Link> : <small>公式サイト未登録</small>}{restaurantGalleries[place.id] && <Link href={restaurantGalleries[place.id]}>店舗写真</Link>}{restaurantMenus[place.id] && <Link href={restaurantMenus[place.id]}>{place.id === 'r4' ? '過去のメニュー' : '公式メニュー'}</Link>}{externalUrl(place.booking) ? <Link href={externalUrl(place.booking)!}>予約</Link> : place.kind === '食事' && <small>予約リンク未登録</small>}</div>}
             </article>
           })}
           <form className="row" onSubmit={e => {
