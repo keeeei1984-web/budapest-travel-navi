@@ -11,16 +11,13 @@ const photoCaptions: Record<string, string> = {
   'bath-csillaghegy': '施設の過去の写真（2017年）',
 }
 const dishPhotos: Record<string, { id: string; dish: string }> = {
-  r0: { id: 'mangalica', dish: 'マンガリッツァ豚' },
   r1: { id: 'mangalica-board', dish: 'マンガリッツァ豚のサラミ・ソーセージ' },
-  r2: { id: 'foie-gras', dish: 'フォアグラ料理' },
   r3: { id: 'seared-foie-gras', dish: 'フォアグラのソテー' },
   r4: { id: 'goose-leg', dish: 'ガチョウのもも肉のロースト' },
   r5: { id: 'paprikash-galuska', dish: 'チキンパプリカ' },
   r6: { id: 'paprikash', dish: 'チキンパプリカ' },
   r7: { id: 'langos', dish: 'ランゴシュ' },
   r8: { id: 'langos', dish: 'ランゴシュ' },
-  r9: { id: 'pasta', dish: 'パスタ料理' },
   r10: { id: 'goulash', dish: 'グヤーシュスープ' },
 }
 
