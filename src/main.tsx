@@ -8,7 +8,7 @@ import { flightGuideTitle } from './flight-guide-data'
 import { Link, useSaved } from './shared'
 import { ReservationDirectory, ReservationLinks } from './restaurant-reservations'
 import { CandidatePhotos, candidateNotes, restaurantMenus } from './candidate-photos'
-import { RestaurantHighlights, restaurantShowcases } from './restaurant-showcase'
+import { mustVisitRestaurants, RestaurantHighlights, restaurantShowcases } from './restaurant-showcase'
 import { BathComparison, BathCover, BathDetails } from './bath-gallery'
 import { bathInfo } from './bath-info'
 import { HomeMap, type MapCategory, type MapPlace } from './home-map'
@@ -223,6 +223,12 @@ function App() {
         <h1>観光・レストラン・温泉候補</h1>
         <div className="segments">{(['観光', '食事', '温泉'] as const).map(key => <button key={key} aria-pressed={kind === key} onClick={() => { setKind(key); setBathView(null); setNotice('') }}>{key === '食事' ? 'レストラン' : key}</button>)}</div>
         {dayPicker}<p className="hint" role="status">{notice || (kind === '食事' ? '料理の提供・営業・予約状況は各店舗でご確認ください。' : kind === '温泉' ? '営業時間・料金・入場条件は公式サイトでご確認ください。' : '候補から訪問先を選んで旅程に追加できます。')}</p>
+        {kind === '食事' && list.some(place => place.kind === '食事' && mustVisitRestaurants[restaurantIdentity(place)]) && <section className="card">
+          <h2>必ず行きたいレストラン</h2>
+          <ul>{list.filter(place => place.kind === '食事' && mustVisitRestaurants[restaurantIdentity(place)]).map(place => <li key={place.id}>
+            <a href={`#restaurant-${place.id}`}>{placeDisplayName(place.name)}</a> · {mustVisitRestaurants[restaurantIdentity(place)]?.recommendation}
+          </li>)}</ul>
+        </section>}
         {kind === '食事' && <ReservationDirectory places={list.filter(place => place.kind === '食事')} identify={restaurantIdentity}/>}
         {kind === '温泉' && bathDetail ? <BathDetails place={bathDetail} zoom={bathView?.zoom ?? false} back={() => showBath(null)} currency={openCurrency}>
           <div className="row">{bathFavoriteButton(bathDetail)}
@@ -241,11 +247,13 @@ function App() {
           {list.filter(place => place.kind === kind).map((place, index, visible) => {
             if (kind === '温泉' && favoritesOnly && !bathFavorites.includes(place.id)) return null
             const restaurantId = restaurantIdentity(place)
+            const mustVisit = place.kind === '食事' ? mustVisitRestaurants[restaurantId] : undefined
             const hasHighlights = place.kind === '食事' && Boolean(restaurantShowcases[restaurantId])
             const update = (change: Partial<Place>) => setList(list.map(item => item.id === place.id ? { ...item, ...change } : item))
-            return <article key={place.id} className="entry">
+            return <article key={place.id} id={mustVisit ? `restaurant-${place.id}` : undefined} className="entry">
               {kind === '温泉' && <BathCover place={place} open={() => showBath(place.id, true)}/>}
               <h3>{placeDisplayName(place.name)}</h3>
+              {mustVisit && <p className="hint"><strong>必ず行きたい</strong> · {mustVisit.recommendation}{mustVisit.menuNote && <><br/>{mustVisit.menuNote}</>}</p>}
               {kind === '温泉' ? <>
                 {bathInfo[place.id] && <small lang="en">{bathInfo[place.id]?.english}</small>}
                 <div className="row">{bathFavoriteButton(place)}

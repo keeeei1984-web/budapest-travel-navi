@@ -17,8 +17,8 @@ const entries: Record<string, [string, string][]> = {
     ['sz-in3', '高窓から光が入る屋内の温泉浴槽'],
   ],
   s13: [
-    ['ru-classic', '八角形のトルコ浴槽とドーム（歴史写真）'],
     ['ru-roof-day', 'ドナウ川に面した屋上のパノラマ浴槽'],
+    ['ru-classic', '八角形のトルコ浴槽とドーム（歴史写真）'],
     ['ru-swim', 'アーチに囲まれた屋内水泳プール'],
     ['ru-well', '屋内ウェルネスエリアの32℃浴槽'],
     ['ru-roof', '夜の屋上浴場と対岸の街明かり'],
@@ -64,7 +64,7 @@ export function BathCover({ place, open }: { place: Place; open: () => void }) {
   const cover = photos(place.id)[0]
   const info = bathInfo[place.id]
   return <>
-    {cover ? <><button className={place.id === 's13' ? 'bath-cover bath-cover-historic' : 'bath-cover'} onClick={open} aria-label={place.name + 'の写真を拡大'}>
+    {cover ? <><button className="bath-cover" onClick={open} aria-label={place.name + 'の写真を拡大'}>
       <img src={cover.url} alt={cover.caption} loading="lazy" decoding="async"/>
     </button>{place.id !== 's12' && <small className="bath-cover-caption">{cover.caption}</small>}<Credit photo={cover}/></> : <div className="bath-photo-empty">浴槽写真未登録</div>}
     {info?.visitStatus && info.closed && <p className="bath-closed">{info.visitStatus}</p>}

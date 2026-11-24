@@ -7,9 +7,24 @@ type RestaurantShowcase = {
   dishes: readonly string[]
   gallery?: string
   menuNote?: string
+  dishPhoto?: { href: string; label: string }
+}
+
+export const mustVisitRestaurants: Partial<Record<string, { recommendation: string; menuNote?: string }>> = {
+  r10: { recommendation: '酒村おすすめ' },
+  r9: { recommendation: '酒村おすすめ', menuNote: '日本語メニューあり（旅行メモ）。来店時にお店でご確認ください。' },
+  r2: { recommendation: 'YouTubeおすすめ' },
 }
 
 export const restaurantShowcases: Record<string, RestaurantShowcase> = {
+  r0: {
+    dishes: ['マンガリッツァ豚のポークチョップ', '豚すね肉料理'],
+    dishPhoto: {
+      href: 'https://www.tripadvisor.jp/LocationPhotoDirectLink-g274887-d3645242-i248182816-Kispiac_Bisztro-Budapest_Central_Hungary.html',
+      label: 'お店の豚すね肉の写真（Tripadvisor）',
+    },
+    menuNote: 'ポークチョップは公式メニュー掲載。写真は来店者が撮った別の豚肉料理です。',
+  },
   r1: {
     dishes: ['マンガリッツァ豚のハムと森のキノコ', '赤ワイン仕立てのマンガリッツァ豚料理'],
     gallery: 'https://www.negromangalica.hu/en/gallery',
@@ -19,6 +34,10 @@ export const restaurantShowcases: Record<string, RestaurantShowcase> = {
     trip: 'https://jp.trip.com/restaurant/hungary/budapest/detail/paprika-vendgl-13851246/',
     dishes: ['ハンガリー風フォアグラ', '冷製ガチョウのレバーコンフィと野菜', '牛ヒレ肉のシチュー'],
     gallery: 'https://www.paprikavendeglo.hu/en/gallery/',
+    dishPhoto: {
+      href: 'https://www.paprikavendeglo.hu/en/#:~:text=6.%20Hungarian%2Dstyle%20goose%20liver',
+      label: 'お店のハンガリー風フォアグラの写真（公式）',
+    },
   },
   r3: {
     trip: 'https://www.trip.com/restaurant/hungary/budapest/detail/kiskakukk-restaurant-17320281/',
@@ -36,7 +55,7 @@ export const restaurantShowcases: Record<string, RestaurantShowcase> = {
   },
   r9: {
     trip: 'https://my.trip.com/restaurant/hungary/budapest/detail/comme-chez-soi-17319786/',
-    dishes: ['自家製パスタ', 'フォアグラ料理'],
+    dishes: ['ガチョウのフォアグラ料理', '自家製パスタ'],
     gallery: 'https://commechezsoi.hu/rolunk#galeria',
     menuNote: '料理例は店舗紹介と掲載レビューから。',
   },
@@ -52,6 +71,7 @@ export function RestaurantHighlights({ id }: { id: string }) {
   const restaurant = restaurantShowcases[id]
   const reviewUrl = tripadvisorRestaurantUrl(id)
   return <section className="restaurant-highlights" aria-label="店の写真・名物料理・メニュー">
+    {restaurant.dishPhoto && <div className="row"><Link href={restaurant.dishPhoto.href} primary>{restaurant.dishPhoto.label}</Link></div>}
     <div className="restaurant-dishes">
       <h4>おすすめの一皿</h4>
       <strong>{restaurant.dishes[0]}</strong>
@@ -66,7 +86,6 @@ export function RestaurantHighlights({ id }: { id: string }) {
       {restaurant.trip && <Link href={restaurant.trip}>Trip.comの写真</Link>}
       {reviewUrl && <Link href={reviewUrl}>Tripadvisorの写真</Link>}
       {restaurant.gallery && <Link href={restaurant.gallery}>公式ギャラリー</Link>}
-      {id === 'r2' && <Link href="https://www.paprikavendeglo.hu/en/">公式サイトの料理写真</Link>}
     </div>
   </section>
 }
